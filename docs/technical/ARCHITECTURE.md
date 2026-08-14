@@ -61,4 +61,3 @@ Contains automated or repeatable validation resources for the Godot project.
 ## Evolution
 
 This structure is a starting point, not a permanent contract. It may evolve when implemented features reveal concrete requirements. Changes should be motivated by current code and remain small and reviewable.
-

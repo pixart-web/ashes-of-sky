@@ -96,4 +96,3 @@ Ashes of the Sky is an **original IP**. Panzer Dragoon Saga may be considered an
 Never use or reproduce Panzer Dragoon characters, names, lore, dragon designs, levels, symbols, music, dialogue, textures, models, code, story elements, or copyrighted Sega assets.
 
 All new content must prioritize an original identity for Ashes of the Sky.
-

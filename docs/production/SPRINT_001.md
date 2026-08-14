@@ -39,4 +39,3 @@ Tune movement and camera behaviour through repeated playtesting.
 A tester can freely fly Lunaris around a simple environment for five minutes, and the movement is enjoyable enough to justify continued development.
 
 Do not start combat during Sprint 001.
-

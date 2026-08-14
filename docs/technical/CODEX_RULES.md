@@ -67,4 +67,3 @@ Anything intentionally incomplete.
 ### Recommended next task
 
 One logical next step only.
-
