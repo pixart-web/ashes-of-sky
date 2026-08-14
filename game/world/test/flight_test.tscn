@@ -1,0 +1,192 @@
+[gd_scene load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://ui/debug_hud.gd" id="1_hud"]
+
+[sub_resource type="ProceduralSkyMaterial" id="SkyMaterial"]
+sky_top_color = Color(0.055, 0.09, 0.16, 1)
+sky_horizon_color = Color(0.55, 0.34, 0.24, 1)
+ground_bottom_color = Color(0.035, 0.03, 0.035, 1)
+ground_horizon_color = Color(0.34, 0.21, 0.18, 1)
+
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("SkyMaterial")
+
+[sub_resource type="Environment" id="Environment"]
+background_mode = 2
+sky = SubResource("Sky")
+ambient_light_source = 3
+ambient_light_color = Color(0.48, 0.43, 0.5, 1)
+ambient_light_energy = 0.65
+tonemap_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="GroundMaterial"]
+albedo_color = Color(0.18, 0.145, 0.13, 1)
+roughness = 0.92
+
+[sub_resource type="BoxMesh" id="GroundMesh"]
+material = SubResource("GroundMaterial")
+size = Vector3(80, 1, 80)
+
+[sub_resource type="StandardMaterial3D" id="RuinMaterial"]
+albedo_color = Color(0.36, 0.29, 0.25, 1)
+roughness = 0.82
+
+[sub_resource type="BoxMesh" id="RuinBlockMesh"]
+material = SubResource("RuinMaterial")
+size = Vector3(7, 7, 5)
+
+[sub_resource type="CylinderMesh" id="PillarMesh"]
+material = SubResource("RuinMaterial")
+top_radius = 0.75
+bottom_radius = 0.95
+height = 9.0
+
+[sub_resource type="StandardMaterial3D" id="LunarisMaterial"]
+albedo_color = Color(0.31, 0.58, 0.72, 1)
+metallic = 0.18
+roughness = 0.48
+
+[sub_resource type="CapsuleMesh" id="BodyMesh"]
+material = SubResource("LunarisMaterial")
+radius = 0.65
+height = 3.6
+
+[sub_resource type="SphereMesh" id="HeadMesh"]
+material = SubResource("LunarisMaterial")
+radius = 0.62
+height = 1.24
+
+[sub_resource type="PrismMesh" id="WingMesh"]
+material = SubResource("LunarisMaterial")
+size = Vector3(4.8, 0.18, 2.2)
+
+[sub_resource type="StandardMaterial3D" id="EyeMaterial"]
+albedo_color = Color(0.86, 0.93, 0.55, 1)
+emission_enabled = true
+emission = Color(0.62, 0.78, 0.27, 1)
+emission_energy_multiplier = 1.8
+
+[sub_resource type="SphereMesh" id="EyeMesh"]
+material = SubResource("EyeMaterial")
+radius = 0.09
+height = 0.18
+
+[node name="FlightTest" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-48, -28, 0)
+light_color = Color(1, 0.82, 0.68, 1)
+light_energy = 1.35
+shadow_enabled = true
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+position = Vector3(0, -0.5, 0)
+mesh = SubResource("GroundMesh")
+
+[node name="Ruins" type="Node3D" parent="."]
+
+[node name="WestBlock" type="MeshInstance3D" parent="Ruins"]
+position = Vector3(-13, 3.5, -9)
+rotation_degrees = Vector3(0, 18, 0)
+mesh = SubResource("RuinBlockMesh")
+
+[node name="EastBlock" type="MeshInstance3D" parent="Ruins"]
+position = Vector3(15, 5.5, -15)
+rotation_degrees = Vector3(0, -12, 0)
+scale = Vector3(1.1, 1.55, 0.9)
+mesh = SubResource("RuinBlockMesh")
+
+[node name="RaisedPlatform" type="MeshInstance3D" parent="Ruins"]
+position = Vector3(-16, 1.5, 14)
+scale = Vector3(1.9, 0.4, 1.6)
+mesh = SubResource("RuinBlockMesh")
+
+[node name="PillarNorthWest" type="MeshInstance3D" parent="Ruins"]
+position = Vector3(-6, 4.5, -22)
+mesh = SubResource("PillarMesh")
+
+[node name="PillarNorthEast" type="MeshInstance3D" parent="Ruins"]
+position = Vector3(6, 4.5, -22)
+mesh = SubResource("PillarMesh")
+
+[node name="PillarSouthWest" type="MeshInstance3D" parent="Ruins"]
+position = Vector3(-8, 4.5, 17)
+rotation_degrees = Vector3(8, 0, -5)
+mesh = SubResource("PillarMesh")
+
+[node name="BrokenPillar" type="MeshInstance3D" parent="Ruins"]
+position = Vector3(11, 2.6, 10)
+rotation_degrees = Vector3(0, 0, 67)
+scale = Vector3(1, 0.65, 1)
+mesh = SubResource("PillarMesh")
+
+[node name="LunarisPlaceholder" type="Node3D" parent="."]
+position = Vector3(0, 4.2, 0)
+
+[node name="Body" type="MeshInstance3D" parent="LunarisPlaceholder"]
+rotation_degrees = Vector3(90, 0, 0)
+mesh = SubResource("BodyMesh")
+
+[node name="Head" type="MeshInstance3D" parent="LunarisPlaceholder"]
+position = Vector3(0, 0.25, -2.0)
+scale = Vector3(0.82, 0.72, 1.18)
+mesh = SubResource("HeadMesh")
+
+[node name="LeftWing" type="MeshInstance3D" parent="LunarisPlaceholder"]
+position = Vector3(-2.5, 0, -0.1)
+rotation_degrees = Vector3(0, 0, 5)
+mesh = SubResource("WingMesh")
+
+[node name="RightWing" type="MeshInstance3D" parent="LunarisPlaceholder"]
+position = Vector3(2.5, 0, -0.1)
+rotation_degrees = Vector3(0, 180, -5)
+mesh = SubResource("WingMesh")
+
+[node name="LeftEye" type="MeshInstance3D" parent="LunarisPlaceholder"]
+position = Vector3(-0.33, 0.35, -2.55)
+mesh = SubResource("EyeMesh")
+
+[node name="RightEye" type="MeshInstance3D" parent="LunarisPlaceholder"]
+position = Vector3(0.33, 0.35, -2.55)
+mesh = SubResource("EyeMesh")
+
+[node name="Camera" type="Camera3D" parent="."]
+position = Vector3(12, 10, 18)
+rotation_degrees = Vector3(-22, 34, 0)
+current = true
+fov = 68.0
+
+[node name="DebugHUD" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="PanelContainer" parent="DebugHUD"]
+offset_left = 18.0
+offset_top = 18.0
+offset_right = 242.0
+offset_bottom = 168.0
+
+[node name="Margin" type="MarginContainer" parent="DebugHUD/Panel"]
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
+
+[node name="Telemetry" type="VBoxContainer" parent="DebugHUD/Panel/Margin"]
+script = ExtResource("1_hud")
+
+[node name="Title" type="Label" parent="DebugHUD/Panel/Margin/Telemetry"]
+text = "FLIGHT TELEMETRY"
+
+[node name="SpeedValue" type="Label" parent="DebugHUD/Panel/Margin/Telemetry"]
+text = "SPEED: --"
+
+[node name="AltitudeValue" type="Label" parent="DebugHUD/Panel/Margin/Telemetry"]
+text = "ALTITUDE: --"
+
+[node name="StateValue" type="Label" parent="DebugHUD/Panel/Margin/Telemetry"]
+text = "FLIGHT STATE: BOOTSTRAP"
+
+[node name="FPSValue" type="Label" parent="DebugHUD/Panel/Margin/Telemetry"]
+text = "FPS: --"

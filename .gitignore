@@ -1,3 +1,23 @@
+# Godot 4 editor-generated files
+.godot/
+game/.godot/
+
+# Godot export output
+exports/
+game/exports/
+
+# Imported translation output
+*.translation
+
+# Mono/C# generated files (kept safe if the project later adopts C#)
+.mono/
+data_*/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
 # Operating systems
 .DS_Store
 Thumbs.db
@@ -9,21 +29,8 @@ Desktop.ini
 *.swp
 *.swo
 
-# Environment and secrets
-.env
-.env.*
-!.env.example
-
 # Logs and temporary files
 *.log
 tmp/
 temp/
-
-# Build and dependency outputs
-dist/
-build/
-coverage/
-node_modules/
-__pycache__/
-*.py[cod]
 
