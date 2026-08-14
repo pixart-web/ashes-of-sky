@@ -1,0 +1,29 @@
+# Operating systems
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editors and IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and temporary files
+*.log
+tmp/
+temp/
+
+# Build and dependency outputs
+dist/
+build/
+coverage/
+node_modules/
+__pycache__/
+*.py[cod]
+
