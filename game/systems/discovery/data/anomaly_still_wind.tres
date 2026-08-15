@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DiscoveryData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://systems/discovery/discovery_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+discovery_id = &"anomaly_still_wind"
+display_name = "THE STILL WIND"
+category = 4
+short_description = "A pocket of impossible calm where ash and broken fragments remain suspended."

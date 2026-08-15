@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DiscoveryData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://systems/discovery/discovery_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+discovery_id = &"region_ruin_field"
+display_name = "RUIN FIELD"
+category = 0
+short_description = "A dense concentration of ancient towers and arches."

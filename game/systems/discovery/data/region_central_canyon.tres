@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DiscoveryData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://systems/discovery/discovery_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+discovery_id = &"region_central_canyon"
+display_name = "CENTRAL CANYON"
+category = 0
+short_description = "A deep fracture crossing the Valley of Ash. Architect ruins have been exposed along its walls."

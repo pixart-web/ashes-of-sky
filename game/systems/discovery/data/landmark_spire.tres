@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DiscoveryData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://systems/discovery/discovery_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+discovery_id = &"landmark_spire"
+display_name = "THE SPIRE"
+category = 1
+short_description = "An enormous Architect structure visible across much of the valley. Its original purpose is unknown."

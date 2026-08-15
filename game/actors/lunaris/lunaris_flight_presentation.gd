@@ -24,6 +24,10 @@ extends Node3D
 @export var wind_max_pitch: float = 1.25
 @export var wind_smoothing: float = 3.5
 
+@export_category("Environmental Influence")
+@export var calm_response: float = 4.0
+@export_range(0.0, 0.1, 0.005) var calm_particle_ratio: float = 0.015
+
 @export_category("Wing Response")
 @export var wing_turn_response: float = 10.0
 @export var wing_pitch_response: float = 7.0
@@ -47,6 +51,7 @@ var speed_normalized: float = 0.0
 var particle_intensity: float = 0.0
 var wind_intensity: float = 0.0
 var current_boost_strength: float = 0.0
+var environmental_calm_strength: float = 0.0
 
 var flight_controller: LunarisFlightController
 var visual_pivot: Node3D
@@ -63,6 +68,7 @@ var _right_wing_base_rotation: Vector3
 var _elapsed_time: float = 0.0
 var _previous_speed_normalized: float = 0.0
 var _acceleration_response: float = 0.0
+var _environmental_calm_target: float = 0.0
 
 
 func _ready() -> void:
@@ -105,6 +111,11 @@ func _process(delta: float) -> void:
 
 
 func _update_presentation_values(delta: float) -> void:
+  environmental_calm_strength = lerpf(
+    environmental_calm_strength,
+    _environmental_calm_target,
+    _smoothing_weight(calm_response, delta)
+  )
   speed_normalized = _calculate_speed_normalized()
   var boost_target := 1.0 if flight_controller.flight_state == &"BOOST" else 0.0
   current_boost_strength = lerpf(
@@ -122,6 +133,11 @@ func _update_presentation_values(delta: float) -> void:
     target_particle_intensity,
     current_boost_strength * speed_particle_max_ratio
   )
+  target_particle_intensity = lerpf(
+    target_particle_intensity,
+    calm_particle_ratio,
+    environmental_calm_strength
+  )
   particle_intensity = lerpf(
     particle_intensity,
     target_particle_intensity,
@@ -133,6 +149,7 @@ func _update_presentation_values(delta: float) -> void:
     0.0,
     1.0
   )
+  target_wind_intensity *= 1.0 - environmental_calm_strength
   wind_intensity = lerpf(
     wind_intensity,
     target_wind_intensity,
@@ -150,10 +167,15 @@ func _update_presentation_values(delta: float) -> void:
 
 func _update_particles() -> void:
   speed_particles.amount_ratio = clampf(particle_intensity, 0.0, 1.0)
-  speed_particles.speed_scale = lerpf(
+  var particle_speed_scale := lerpf(
     speed_particle_min_speed_scale,
     speed_particle_max_speed_scale,
     speed_normalized
+  )
+  speed_particles.speed_scale = lerpf(
+    particle_speed_scale,
+    speed_particle_min_speed_scale * 0.25,
+    environmental_calm_strength
   )
 
   var trail_amount := clampf(
@@ -216,6 +238,10 @@ func _update_body_motion(delta: float) -> void:
 func _update_wind() -> void:
   wind_player.volume_db = lerpf(wind_min_volume, wind_max_volume, wind_intensity)
   wind_player.pitch_scale = lerpf(wind_min_pitch, wind_max_pitch, wind_intensity)
+
+
+func set_environmental_calm(active: bool) -> void:
+  _environmental_calm_target = 1.0 if active else 0.0
 
 
 func _calculate_speed_normalized() -> float:

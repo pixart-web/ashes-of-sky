@@ -1,10 +1,13 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=24 format=3]
 
 [ext_resource type="Script" path="res://ui/debug_hud.gd" id="1_hud"]
 [ext_resource type="Script" path="res://actors/lunaris/lunaris_flight_controller.gd" id="2_flight_controller"]
 [ext_resource type="Script" path="res://actors/lunaris/lunaris_flight_camera.gd" id="3_flight_camera"]
 [ext_resource type="Script" path="res://actors/lunaris/lunaris_flight_presentation.gd" id="4_flight_presentation"]
 [ext_resource type="PackedScene" path="res://world/valley/valley_of_ash.tscn" id="5_valley"]
+[ext_resource type="Script" path="res://systems/discovery/discovery_manager.gd" id="6_discovery_manager"]
+[ext_resource type="Script" path="res://world/valley/valley_discovery_layer.gd" id="7_discovery_layer"]
+[ext_resource type="PackedScene" path="res://ui/discovery/discovery_ui.tscn" id="8_discovery_ui"]
 
 [sub_resource type="StandardMaterial3D" id="LunarisMaterial"]
 albedo_color = Color(0.31, 0.58, 0.72, 1)
@@ -91,6 +94,9 @@ size = Vector2(0.08, 2.4)
 [node name="ValleyOfAsh" parent="." instance=ExtResource("5_valley")]
 flight_player_path = NodePath("../Lunaris")
 
+[node name="DiscoveryManager" type="Node" parent="."]
+script = ExtResource("6_discovery_manager")
+
 [node name="Lunaris" type="CharacterBody3D" parent="."]
 position = Vector3(0, 150, 650)
 collision_layer = 2
@@ -167,6 +173,10 @@ pitch_scale = 0.75
 unit_size = 12.0
 max_distance = 80.0
 
+[node name="WorldDiscovery" type="Node3D" parent="."]
+script = ExtResource("7_discovery_layer")
+discovery_manager_path = NodePath("../DiscoveryManager")
+
 [node name="FlightCameraRig" type="Node3D" parent="."]
 script = ExtResource("3_flight_camera")
 target_path = NodePath("../Lunaris")
@@ -223,3 +233,6 @@ text = "POSITION: --"
 
 [node name="SpireDistanceValue" type="Label" parent="DebugHUD/Panel/Margin/Telemetry"]
 text = "DISTANCE TO SPIRE: --"
+
+[node name="DiscoveryUI" parent="." instance=ExtResource("8_discovery_ui")]
+discovery_manager_path = NodePath("../DiscoveryManager")

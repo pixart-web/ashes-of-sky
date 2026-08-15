@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DiscoveryData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://systems/discovery/discovery_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+discovery_id = &"echo_last_signal"
+display_name = "THE LAST SIGNAL"
+category = 3
+short_description = "A partial Architect record recovered from the central object in the Silent Chamber."
+recovered_text = "We sealed the lower passages today.\n\nThe resonance is spreading faster than predicted.\n\nIt is no longer responding to commands.\n\nIf the northern towers answer, initiate Silence immediately.\n\nDo not wait for us.\n\nARCHITECT RECORD // PARTIAL RECOVERY"

@@ -1,0 +1,209 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://ui/discovery/discovery_ui.gd" id="1_ui"]
+
+[sub_resource type="StyleBoxFlat" id="BannerStyle"]
+bg_color = Color(0.035, 0.055, 0.065, 0.88)
+border_width_left = 3
+border_color = Color(0.20, 0.70, 0.76, 0.9)
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+
+[sub_resource type="StyleBoxFlat" id="PanelStyle"]
+bg_color = Color(0.045, 0.060, 0.068, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.20, 0.55, 0.59, 0.65)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="DiscoveryUI" type="CanvasLayer"]
+layer = 20
+script = ExtResource("1_ui")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Banner" type="PanelContainer" parent="Root"]
+visible = false
+layout_mode = 1
+anchors_preset = 0
+anchor_left = 0.66
+anchor_top = 0.06
+anchor_right = 0.97
+anchor_bottom = 0.19
+theme_override_styles/panel = SubResource("BannerStyle")
+
+[node name="Margin" type="MarginContainer" parent="Root/Banner"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 12
+
+[node name="Content" type="VBoxContainer" parent="Root/Banner/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Category" type="Label" parent="Root/Banner/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.42, 0.78, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+text = "DISCOVERED"
+
+[node name="Name" type="Label" parent="Root/Banner/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.91, 0.88, 1)
+theme_override_font_sizes/font_size = 24
+text = "LOCATION"
+
+[node name="InteractionHint" type="PanelContainer" parent="Root"]
+visible = false
+layout_mode = 1
+anchor_left = 0.36
+anchor_top = 0.84
+anchor_right = 0.64
+anchor_bottom = 0.91
+theme_override_styles/panel = SubResource("BannerStyle")
+
+[node name="Margin" type="MarginContainer" parent="Root/InteractionHint"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 8
+
+[node name="Label" type="Label" parent="Root/InteractionHint/Margin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.90, 0.91, 1)
+theme_override_font_sizes/font_size = 16
+text = "INTERACT"
+horizontal_alignment = 1
+
+[node name="JournalOverlay" type="ColorRect" parent="Root"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.018, 0.025, 0.03, 0.86)
+
+[node name="Panel" type="PanelContainer" parent="Root/JournalOverlay"]
+layout_mode = 1
+anchor_left = 0.17
+anchor_top = 0.08
+anchor_right = 0.83
+anchor_bottom = 0.92
+theme_override_styles/panel = SubResource("PanelStyle")
+
+[node name="Margin" type="MarginContainer" parent="Root/JournalOverlay/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 34
+theme_override_constants/margin_top = 26
+theme_override_constants/margin_right = 34
+theme_override_constants/margin_bottom = 24
+
+[node name="Content" type="VBoxContainer" parent="Root/JournalOverlay/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Root/JournalOverlay/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.66, 0.85, 0.86, 1)
+theme_override_font_sizes/font_size = 30
+text = "EXPLORATION JOURNAL"
+
+[node name="Divider" type="HSeparator" parent="Root/JournalOverlay/Panel/Margin/Content"]
+layout_mode = 2
+
+[node name="JournalText" type="RichTextLabel" parent="Root/JournalOverlay/Panel/Margin/Content"]
+custom_minimum_size = Vector2(0, 460)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/default_color = Color(0.76, 0.79, 0.76, 1)
+theme_override_font_sizes/normal_font_size = 17
+bbcode_enabled = true
+text = "No discoveries recorded."
+fit_content = false
+scroll_active = true
+
+[node name="CloseHint" type="Label" parent="Root/JournalOverlay/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.43, 0.61, 0.62, 1)
+text = "J / CANCEL  —  CLOSE"
+horizontal_alignment = 2
+
+[node name="EchoOverlay" type="ColorRect" parent="Root"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.012, 0.022, 0.028, 0.78)
+
+[node name="Panel" type="PanelContainer" parent="Root/EchoOverlay"]
+layout_mode = 1
+anchor_left = 0.18
+anchor_top = 0.12
+anchor_right = 0.82
+anchor_bottom = 0.88
+theme_override_styles/panel = SubResource("PanelStyle")
+
+[node name="Margin" type="MarginContainer" parent="Root/EchoOverlay/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 42
+theme_override_constants/margin_top = 34
+theme_override_constants/margin_right = 42
+theme_override_constants/margin_bottom = 30
+
+[node name="Content" type="VBoxContainer" parent="Root/EchoOverlay/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Category" type="Label" parent="Root/EchoOverlay/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.34, 0.76, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+text = "ECHO 001 // PARTIAL RECOVERY"
+
+[node name="EchoTitle" type="Label" parent="Root/EchoOverlay/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.81, 0.91, 0.91, 1)
+theme_override_font_sizes/font_size = 32
+text = "THE LAST SIGNAL"
+
+[node name="Accent" type="ColorRect" parent="Root/EchoOverlay/Panel/Margin/Content"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+color = Color(0.20, 0.70, 0.76, 0.8)
+
+[node name="EchoText" type="RichTextLabel" parent="Root/EchoOverlay/Panel/Margin/Content"]
+custom_minimum_size = Vector2(0, 330)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/default_color = Color(0.79, 0.82, 0.80, 1)
+theme_override_font_sizes/normal_font_size = 19
+text = "Recovered text"
+fit_content = false
+
+[node name="CloseHint" type="Label" parent="Root/EchoOverlay/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.43, 0.61, 0.62, 1)
+text = "INTERACT / CANCEL  —  CLOSE"
+horizontal_alignment = 2

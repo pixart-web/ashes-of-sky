@@ -61,6 +61,7 @@ godot --path game
 | Boost | Shift | South face button |
 | Camera look | Hold right mouse button and move | Right stick |
 | Recenter camera | C | Right stick click |
+| Exploration Journal | J | Back / Select button |
 
 Lunaris always maintains a minimum forward speed. Releasing accelerate or boost returns the creature gradually toward cruise speed. Manual camera look returns naturally to the chase view after a short delay. The current altitude telemetry uses world-space Y rather than terrain-relative height.
 
@@ -71,6 +72,12 @@ Flight presentation uses procedural Godot particles and placeholder geometry onl
 The world pass is organized into replaceable regions: Starting Cliff, Central Canyon, Ash Basin, Broken Plateau, Ruin Field, Ancient Gate, The Spire, and Lost Places. The Spire is intentionally unmarked so visual navigation can be tested.
 
 The debug HUD can display the current region, world position, and distance to The Spire. Set `show_world_navigation` on the HUD telemetry node to `false` to hide those development readouts. Travelling beyond the distant natural boundary or extreme altitude resets Lunaris to the Starting Cliff; this is a temporary prototype safeguard rather than a final world boundary.
+
+## Discovery prototype
+
+Regions, landmarks, Lost Places, Echoes, and Anomalies use stable discovery IDs and persist for the current session. Automatic discoveries use spatial volumes; Echoes require the semantic `interact` action. The Journal lists only recovered knowledge and safely pauses flight while open.
+
+Press **F8** during development to reset session discoveries for repeated first-discovery testing. This debug action awards no XP, loot, money, or other progression.
 
 ## Repository layout
 
