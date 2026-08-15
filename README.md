@@ -18,9 +18,9 @@ The core experience combines:
 
 ## Current phase
 
-Pre-production / Flight Prototype.
+Pre-production / Valley of Ash World Prototype.
 
-The current sprint is focused on preparing a small, readable test space for the first playable flight controller. Combat is intentionally out of scope.
+The current sprint combines playable flight, a comfortable chase camera, lightweight speed presentation, and the first explorable Valley of Ash world-layout prototype. Combat is intentionally out of scope.
 
 ## Development principle
 
@@ -42,13 +42,35 @@ No third-party plugins or external production assets are required.
 3. Open the project.
 4. Press **F6** while `flight_test.tscn` is open, or **F5** to run the configured main scene.
 
-The scene is intentionally static during AOTS-001. It contains a primitive test environment, a placeholder Lunaris, and debug telemetry ready for the flight prototype.
+The scene contains the 1.5–2 km Valley of Ash prototype, a playable Lunaris placeholder, and optional live flight/world telemetry.
 
 From a terminal with Godot available on `PATH`, the project can also be started with:
 
 ```text
 godot --path game
 ```
+
+## Flight controls
+
+| Action | Keyboard | Gamepad |
+| --- | --- | --- |
+| Accelerate | W | Right trigger |
+| Decelerate | S | Left trigger |
+| Yaw | A / D | Left stick X |
+| Pitch | Up / Down arrows | Left stick Y |
+| Boost | Shift | South face button |
+| Camera look | Hold right mouse button and move | Right stick |
+| Recenter camera | C | Right stick click |
+
+Lunaris always maintains a minimum forward speed. Releasing accelerate or boost returns the creature gradually toward cruise speed. Manual camera look returns naturally to the chase view after a short delay. The current altitude telemetry uses world-space Y rather than terrain-relative height.
+
+Flight presentation uses procedural Godot particles and placeholder geometry only. A speed-driven wind audio channel is prepared, but intentionally has no sound asset until suitable original audio is approved.
+
+## Valley of Ash prototype
+
+The world pass is organized into replaceable regions: Starting Cliff, Central Canyon, Ash Basin, Broken Plateau, Ruin Field, Ancient Gate, The Spire, and Lost Places. The Spire is intentionally unmarked so visual navigation can be tested.
+
+The debug HUD can display the current region, world position, and distance to The Spire. Set `show_world_navigation` on the HUD telemetry node to `false` to hide those development readouts. Travelling beyond the distant natural boundary or extreme altitude resets Lunaris to the Starting Cliff; this is a temporary prototype safeguard rather than a final world boundary.
 
 ## Repository layout
 
