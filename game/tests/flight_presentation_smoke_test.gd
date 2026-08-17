@@ -15,6 +15,8 @@ func _run() -> void:
     return
 
   var flight_test := packed_scene.instantiate()
+  var opening_sequence := flight_test.get_node("FirstFlightSequence") as FirstFlightSequence
+  opening_sequence.play_opening_on_start = false
   root.add_child(flight_test)
   await _wait_for_physics_frames(4)
 

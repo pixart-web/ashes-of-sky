@@ -12,9 +12,12 @@ var _definitions: Dictionary = {}
 var _discovered_ids: Dictionary = {}
 var _interaction_data: DiscoveryData
 var _interaction_point: Node
+var discovery_enabled: bool = true
 
 
 func _unhandled_input(event: InputEvent) -> void:
+  if not discovery_enabled:
+    return
   if event.is_action_pressed(&"reset_discoveries"):
     reset_discoveries()
     get_viewport().set_input_as_handled()
@@ -22,6 +25,16 @@ func _unhandled_input(event: InputEvent) -> void:
   if event.is_action_pressed(&"interact") and _interaction_data != null:
     activate_current_interaction()
     get_viewport().set_input_as_handled()
+
+
+func set_discovery_enabled(enabled: bool) -> void:
+  if discovery_enabled == enabled:
+    return
+  discovery_enabled = enabled
+  if not discovery_enabled and _interaction_data != null:
+    interaction_availability_changed.emit(_interaction_data, false)
+    _interaction_data = null
+    _interaction_point = null
 
 
 func register_definition(data: DiscoveryData) -> bool:
@@ -35,6 +48,8 @@ func register_definition(data: DiscoveryData) -> bool:
 
 
 func discover_data(data: DiscoveryData) -> bool:
+  if not discovery_enabled:
+    return false
   if not register_definition(data):
     return false
   if _discovered_ids.has(data.discovery_id):

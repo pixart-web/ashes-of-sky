@@ -27,6 +27,7 @@ signal telemetry_updated(speed: float, altitude: float, flight_state: StringName
 
 var current_speed: float = cruise_speed
 var flight_state: StringName = &"CRUISE"
+var player_input_enabled: bool = true
 
 var _pitch: float = 0.0
 var _yaw: float = 0.0
@@ -43,6 +44,10 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+  if not player_input_enabled:
+    telemetry_updated.emit(velocity.length(), global_position.y, flight_state)
+    return
+
   _update_speed(delta)
   _update_steering(delta)
   _update_velocity(delta)
@@ -64,6 +69,45 @@ func reset_flight(reset_transform: Transform3D) -> void:
   _yaw_input = 0.0
   if visual_pivot != null:
     visual_pivot.rotation.z = 0.0
+
+
+func set_player_input_enabled(enabled: bool) -> void:
+  player_input_enabled = enabled
+
+
+func begin_scripted_flight(start_transform: Transform3D) -> void:
+  reset_flight(start_transform)
+  player_input_enabled = false
+  current_speed = minimum_speed
+  velocity = Vector3.ZERO
+  flight_state = &"CINEMATIC"
+
+
+func update_scripted_flight(
+  scripted_transform: Transform3D,
+  scripted_velocity: Vector3
+) -> void:
+  global_transform = scripted_transform
+  velocity = scripted_velocity
+  current_speed = clampf(scripted_velocity.length(), minimum_speed, boost_speed)
+  flight_state = &"CINEMATIC"
+  telemetry_updated.emit(velocity.length(), global_position.y, flight_state)
+
+
+func complete_scripted_handoff(
+  handoff_velocity: Vector3,
+  handoff_rotation: Vector3
+) -> void:
+  rotation = handoff_rotation
+  velocity = handoff_velocity
+  current_speed = clampf(handoff_velocity.length(), minimum_speed, boost_speed)
+  flight_state = &"CRUISE"
+  _pitch = rotation.x
+  _yaw = rotation.y
+  _pitch_rate = 0.0
+  _yaw_rate = 0.0
+  _yaw_input = 0.0
+  player_input_enabled = true
 
 
 func _update_speed(delta: float) -> void:

@@ -1,0 +1,129 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://sequences/first_flight/first_flight_ui.gd" id="1_ui"]
+
+[sub_resource type="StyleBoxFlat" id="DebugStyle"]
+bg_color = Color(0.02, 0.03, 0.035, 0.82)
+border_width_left = 2
+border_color = Color(0.18, 0.62, 0.68, 0.8)
+
+[node name="FirstFlightUI" type="CanvasLayer"]
+layer = 30
+script = ExtResource("1_ui")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BlackOverlay" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="OpeningText" type="VBoxContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -360.0
+offset_top = -65.0
+offset_right = 360.0
+offset_bottom = 65.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 24
+
+[node name="Location" type="Label" parent="Root/OpeningText"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.85, 0.84, 1)
+theme_override_font_sizes/font_size = 32
+text = "E L Y N D R A"
+horizontal_alignment = 1
+
+[node name="Era" type="Label" parent="Root/OpeningText"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.48, 0.63, 0.64, 1)
+theme_override_font_sizes/font_size = 16
+text = "4,217 YEARS AFTER THE SILENCE"
+horizontal_alignment = 1
+
+[node name="Title" type="VBoxContainer" parent="Root"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -440.0
+offset_top = -70.0
+offset_right = 440.0
+offset_bottom = 70.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 14
+
+[node name="GameTitle" type="Label" parent="Root/Title"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.90, 0.89, 1)
+theme_override_colors/font_shadow_color = Color(0.12, 0.55, 0.60, 0.65)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 42
+text = "A S H E S   O F   T H E   S K Y"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Root/Title"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.48, 0.67, 0.68, 1)
+theme_override_font_sizes/font_size = 15
+text = "P R O L O G U E"
+horizontal_alignment = 1
+
+[node name="TimelineDebug" type="PanelContainer" parent="Root"]
+visible = false
+layout_mode = 1
+anchors_preset = 0
+offset_left = 930.0
+offset_top = 18.0
+offset_right = 1262.0
+offset_bottom = 132.0
+theme_override_styles/panel = SubResource("DebugStyle")
+
+[node name="Margin" type="MarginContainer" parent="Root/TimelineDebug"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="Content" type="VBoxContainer" parent="Root/TimelineDebug/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="State" type="Label" parent="Root/TimelineDebug/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "OPENING STATE: INTRO"
+
+[node name="Time" type="Label" parent="Root/TimelineDebug/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "SEQUENCE TIME: 0.00"
+
+[node name="Control" type="Label" parent="Root/TimelineDebug/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "PLAYER CONTROL: NO"

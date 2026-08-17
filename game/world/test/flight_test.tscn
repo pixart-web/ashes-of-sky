@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3]
+[gd_scene load_steps=29 format=3]
 
 [ext_resource type="Script" path="res://ui/debug_hud.gd" id="1_hud"]
 [ext_resource type="Script" path="res://actors/lunaris/lunaris_flight_controller.gd" id="2_flight_controller"]
@@ -8,6 +8,8 @@
 [ext_resource type="Script" path="res://systems/discovery/discovery_manager.gd" id="6_discovery_manager"]
 [ext_resource type="Script" path="res://world/valley/valley_discovery_layer.gd" id="7_discovery_layer"]
 [ext_resource type="PackedScene" path="res://ui/discovery/discovery_ui.tscn" id="8_discovery_ui"]
+[ext_resource type="Script" path="res://sequences/first_flight/first_flight_sequence.gd" id="9_first_flight_sequence"]
+[ext_resource type="PackedScene" path="res://sequences/first_flight/first_flight_ui.tscn" id="10_first_flight_ui"]
 
 [sub_resource type="StandardMaterial3D" id="LunarisMaterial"]
 albedo_color = Color(0.31, 0.58, 0.72, 1)
@@ -38,6 +40,20 @@ emission_energy_multiplier = 1.8
 material = SubResource("EyeMaterial")
 radius = 0.09
 height = 0.18
+
+[sub_resource type="StandardMaterial3D" id="RiderMaterial"]
+albedo_color = Color(0.075, 0.09, 0.10, 1)
+roughness = 0.88
+
+[sub_resource type="CapsuleMesh" id="RiderBodyMesh"]
+material = SubResource("RiderMaterial")
+radius = 0.22
+height = 1.0
+
+[sub_resource type="SphereMesh" id="RiderHeadMesh"]
+material = SubResource("RiderMaterial")
+radius = 0.20
+height = 0.40
 
 [sub_resource type="BoxShape3D" id="LunarisCollisionShape"]
 size = Vector3(5.8, 1.0, 3.6)
@@ -133,6 +149,17 @@ mesh = SubResource("EyeMesh")
 [node name="RightEye" type="MeshInstance3D" parent="Lunaris/VisualPivot"]
 position = Vector3(0.33, 0.35, -2.55)
 mesh = SubResource("EyeMesh")
+
+[node name="RiderPlaceholder" type="Node3D" parent="Lunaris/VisualPivot"]
+position = Vector3(0, 0.55, -0.15)
+
+[node name="Body" type="MeshInstance3D" parent="Lunaris/VisualPivot/RiderPlaceholder"]
+position = Vector3(0, 0.42, 0)
+mesh = SubResource("RiderBodyMesh")
+
+[node name="Head" type="MeshInstance3D" parent="Lunaris/VisualPivot/RiderPlaceholder"]
+position = Vector3(0, 1.08, -0.04)
+mesh = SubResource("RiderHeadMesh")
 
 [node name="Presentation" type="Node3D" parent="Lunaris"]
 script = ExtResource("4_flight_presentation")
@@ -236,3 +263,14 @@ text = "DISTANCE TO SPIRE: --"
 
 [node name="DiscoveryUI" parent="." instance=ExtResource("8_discovery_ui")]
 discovery_manager_path = NodePath("../DiscoveryManager")
+
+[node name="FirstFlightUI" parent="." instance=ExtResource("10_first_flight_ui")]
+
+[node name="FirstFlightSequence" type="Node" parent="."]
+script = ExtResource("9_first_flight_sequence")
+flight_player_path = NodePath("../Lunaris")
+camera_rig_path = NodePath("../FlightCameraRig")
+discovery_manager_path = NodePath("../DiscoveryManager")
+discovery_ui_path = NodePath("../DiscoveryUI")
+debug_hud_path = NodePath("../DebugHUD")
+opening_ui_path = NodePath("../FirstFlightUI")

@@ -23,6 +23,7 @@ var _pause_state_before_overlay: bool = false
 var _echo_close_block_frames: int = 0
 var _interaction_available: bool = false
 var _interaction_data: DiscoveryData
+var exploration_input_enabled: bool = true
 
 
 func _ready() -> void:
@@ -48,6 +49,8 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+  if not exploration_input_enabled:
+    return
   if echo_overlay.visible:
     if _echo_close_block_frames <= 0 and (
       event.is_action_pressed(&"interact")
@@ -68,8 +71,20 @@ func _unhandled_input(event: InputEvent) -> void:
     get_viewport().set_input_as_handled()
 
 
+func set_exploration_input_enabled(enabled: bool) -> void:
+  exploration_input_enabled = enabled
+  if not exploration_input_enabled:
+    interaction_hint.visible = false
+    if journal_overlay.visible:
+      close_journal()
+    if echo_overlay.visible:
+      close_echo()
+  else:
+    _refresh_interaction_hint()
+
+
 func open_journal() -> void:
-  if journal_overlay.visible or echo_overlay.visible:
+  if not exploration_input_enabled or journal_overlay.visible or echo_overlay.visible:
     return
   _rebuild_journal()
   journal_overlay.visible = true
@@ -86,7 +101,7 @@ func close_journal() -> void:
 
 
 func open_echo(data: DiscoveryData) -> void:
-  if data == null or journal_overlay.visible:
+  if not exploration_input_enabled or data == null or journal_overlay.visible:
     return
   echo_title.text = data.display_name
   echo_text.text = data.recovered_text

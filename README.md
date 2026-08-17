@@ -62,10 +62,17 @@ godot --path game
 | Camera look | Hold right mouse button and move | Right stick |
 | Recenter camera | C | Right stick click |
 | Exploration Journal | J | Back / Select button |
+| Skip opening | Enter | North face button |
 
 Lunaris always maintains a minimum forward speed. Releasing accelerate or boost returns the creature gradually toward cruise speed. Manual camera look returns naturally to the chase view after a short delay. The current altitude telemetry uses world-space Y rather than terrain-relative height.
 
 Flight presentation uses procedural Godot particles and placeholder geometry only. A speed-driven wind audio channel is prepared, but intentionally has no sound asset until suitable original audio is approved.
+
+## First Flight opening
+
+The main scene now begins with the handcrafted First Flight sequence. It moves from the Elyndra/Silence introduction through Lunaris's cliff leap and freefall into the existing flight controller without loading another scene. Set `play_opening_on_start` on `FirstFlightSequence` to `false` for a direct development start. Its optional timeline overlay reports the current opening state, elapsed sequence time, and control status, and is disabled by default.
+
+The sequence exposes event hooks for ambient wind, distant environmental rumble, Lunaris movement, wing deployment, title reveal, and gameplay handoff. No production audio files are included yet; the opening remains fully functional when played silently.
 
 ## Valley of Ash prototype
 
