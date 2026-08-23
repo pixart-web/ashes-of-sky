@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "M_Kael_Placeholder"
+albedo_color = Color(0.035, 0.043, 0.048, 1)
+metallic = 0.18
+roughness = 0.82

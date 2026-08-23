@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "M_Architect_AgedMetal"
+albedo_color = Color(0.09, 0.078, 0.068, 1)
+metallic = 0.48
+roughness = 0.76

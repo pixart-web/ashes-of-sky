@@ -31,8 +31,9 @@ func _run() -> void:
     return
 
   var visual_pivot := lunaris.get_node("VisualPivot") as Node3D
-  var left_wing := visual_pivot.get_node("LeftWing") as MeshInstance3D
-  var right_wing := visual_pivot.get_node("RightWing") as MeshInstance3D
+  var lunaris_visual := visual_pivot.get_node("LunarisVisual") as LunarisVisual
+  var left_wing := lunaris_visual.get_node("WingLeft") as Node3D
+  var right_wing := lunaris_visual.get_node("WingRight") as Node3D
   var collision_shape := lunaris.get_node("CollisionShape3D") as CollisionShape3D
   var speed_particles := presentation.get_node("SpeedParticles") as GPUParticles3D
   var boost_trail := presentation.get_node("BoostTrailParticles") as GPUParticles3D
@@ -107,8 +108,8 @@ func _run() -> void:
   await _wait_for_physics_frames(180)
   _assert(not boost_trail.emitting, "Boost trail switches off smoothly after boost.")
   _assert(presentation.current_boost_strength < 0.01, "Boost presentation returns to neutral.")
-  _assert(left_wing.rotation.distance_to(presentation._left_wing_base_rotation) < 0.02, "Left wing returns smoothly to neutral.")
-  _assert(right_wing.rotation.distance_to(presentation._right_wing_base_rotation) < 0.02, "Right wing returns smoothly to neutral.")
+  _assert(absf(left_wing.rotation.y - deg_to_rad(10.0)) < 0.25, "Left wing returns to a restrained dynamic glide.")
+  _assert(absf(right_wing.rotation.y - deg_to_rad(-10.0)) < 0.25, "Right wing returns to a restrained dynamic glide.")
 
   for _transition in range(3):
     Input.action_press(&"flight_boost")

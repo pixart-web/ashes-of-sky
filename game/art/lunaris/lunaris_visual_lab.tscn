@@ -1,0 +1,74 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://art/lunaris/lunaris_visual_lab.gd" id="1_lab"]
+[ext_resource type="PackedScene" path="res://art/lunaris/lunaris_visual.tscn" id="2_visual"]
+
+[sub_resource type="Environment" id="LabEnvironment"]
+background_mode = 1
+background_color = Color(0.03, 0.036, 0.044, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.24, 0.29, 0.34, 1)
+ambient_light_energy = 0.88
+reflected_light_source = 2
+tonemap_mode = 2
+tonemap_exposure = 1.08
+
+[sub_resource type="StandardMaterial3D" id="FloorMaterial"]
+albedo_color = Color(0.028, 0.032, 0.038, 1)
+roughness = 0.92
+
+[sub_resource type="PlaneMesh" id="FloorMesh"]
+material = SubResource("FloorMaterial")
+size = Vector2(28, 28)
+
+[sub_resource type="StandardMaterial3D" id="BackdropMaterial"]
+albedo_color = Color(0.012, 0.015, 0.02, 1)
+roughness = 1.0
+
+[sub_resource type="CylinderMesh" id="PlinthMesh"]
+material = SubResource("BackdropMaterial")
+top_radius = 4.4
+bottom_radius = 4.8
+height = 0.18
+radial_segments = 32
+
+[node name="LunarisVisualLab" type="Node3D"]
+script = ExtResource("1_lab")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("LabEnvironment")
+
+[node name="KeyLight" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-36, -38, 0)
+light_color = Color(1, 0.78, 0.58, 1)
+light_energy = 3.1
+shadow_enabled = true
+
+[node name="FillLight" type="OmniLight3D" parent="."]
+position = Vector3(-4, 3, 3)
+light_color = Color(0.3, 0.55, 0.68, 1)
+light_energy = 8.0
+omni_range = 12.0
+
+[node name="RimLight" type="OmniLight3D" parent="."]
+position = Vector3(4, 2.5, 4)
+light_color = Color(0.32, 0.52, 0.62, 1)
+light_energy = 6.0
+omni_range = 11.0
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+position = Vector3(0, -1.2, 0)
+mesh = SubResource("FloorMesh")
+
+[node name="Plinth" type="MeshInstance3D" parent="."]
+position = Vector3(0, -1.08, 0.3)
+mesh = SubResource("PlinthMesh")
+
+[node name="ModelPivot" type="Node3D" parent="."]
+
+[node name="LunarisVisual" parent="ModelPivot" instance=ExtResource("2_visual")]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+position = Vector3(8.2, 4.2, -8.4)
+current = true
+fov = 42.0

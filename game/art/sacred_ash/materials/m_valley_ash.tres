@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "M_Valley_Ash"
+albedo_color = Color(0.235, 0.205, 0.185, 1)
+roughness = 0.98

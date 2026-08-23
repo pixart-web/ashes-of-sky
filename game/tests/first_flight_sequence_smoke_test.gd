@@ -64,7 +64,7 @@ func _test_complete_opening(packed_scene: PackedScene) -> void:
   _assert(not discovery_ui.exploration_input_enabled, "Journal and interaction are locked during the cinematic.")
   discovery_ui.open_journal()
   _assert(not discovery_ui.is_journal_open(), "Journal cannot be opened during the cinematic.")
-  _assert(lunaris.has_node("VisualPivot/RiderPlaceholder"), "A modular rider silhouette is mounted on Lunaris.")
+  _assert(lunaris.has_node("VisualPivot/LunarisVisual/RiderMount/KaelPlaceholder"), "A correctly seated modular rider silhouette is mounted on Lunaris.")
   _assert(InputMap.has_action(&"skip_opening"), "Opening skip uses a semantic input action.")
   _assert(_has_physical_key(&"skip_opening", KEY_ENTER), "Enter skips the opening.")
   _assert(_has_gamepad_event(&"skip_opening"), "Opening skip has a gamepad binding.")
@@ -76,7 +76,7 @@ func _test_complete_opening(packed_scene: PackedScene) -> void:
     minimum_altitude = minf(minimum_altitude, lunaris.global_position.y)
     maximum_fold_distance = maxf(
       maximum_fold_distance,
-      lunaris.get_node("VisualPivot/LeftWing").rotation.distance_to(
+      lunaris.get_node("VisualPivot/LunarisVisual/WingLeft").rotation.distance_to(
         sequence._left_wing_base_rotation
       )
     )
@@ -89,7 +89,7 @@ func _test_complete_opening(packed_scene: PackedScene) -> void:
   _assert(minimum_altitude < sequence.opening_start_position.y - 60.0, "Freefall creates a substantial altitude drop.")
   _assert(maximum_fold_distance > 0.7, "Wings are visibly folded before deployment.")
   _assert(
-    lunaris.get_node("VisualPivot/LeftWing").rotation.distance_to(sequence._left_wing_base_rotation) < 0.03,
+    lunaris.get_node("VisualPivot/LunarisVisual/WingLeft").rotation.distance_to(sequence._left_wing_base_rotation) < 0.03,
     "Wings are fully deployed at handoff."
   )
   _assert(sequence.player_has_control, "Player control is granted without loading another scene.")

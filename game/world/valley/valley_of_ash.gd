@@ -5,6 +5,11 @@ signal world_navigation_updated(region: StringName, position: Vector3, distance_
 
 const SPAWN_POSITION := Vector3(0.0, 150.0, 650.0)
 const SPIRE_POSITION := Vector3(0.0, 0.0, -650.0)
+const M_ARCHITECT_DARK_STONE := preload("res://art/sacred_ash/materials/m_architect_dark_stone.tres")
+const M_ARCHITECT_AGED_METAL := preload("res://art/sacred_ash/materials/m_architect_aged_metal.tres")
+const M_ARCHITECT_CYAN_ACTIVE := preload("res://art/sacred_ash/materials/m_architect_cyan_active.tres")
+const M_VALLEY_ASH := preload("res://art/sacred_ash/materials/m_valley_ash.tres")
+const M_VALLEY_ROCK := preload("res://art/sacred_ash/materials/m_valley_rock.tres")
 
 @export_node_path("CharacterBody3D") var flight_player_path: NodePath
 @export var out_of_bounds_radius: float = 1150.0
@@ -77,23 +82,12 @@ func _reset_flight_player() -> void:
 
 
 func _create_materials() -> void:
-  _terrain_material = _make_material(Color(0.31, 0.25, 0.20), 0.96)
-  _rock_material = _make_material(Color(0.23, 0.19, 0.18), 0.94)
-  _ruin_material = _make_material(Color(0.19, 0.22, 0.24), 0.78)
-  _dark_ruin_material = _make_material(Color(0.095, 0.12, 0.14), 0.72, 0.18)
-  _preserved_material = _make_material(Color(0.16, 0.21, 0.23), 0.62, 0.28)
-  _active_material = _make_material(Color(0.12, 0.50, 0.57), 0.42, 0.12)
-  _active_material.emission_enabled = true
-  _active_material.emission = Color(0.06, 0.55, 0.64)
-  _active_material.emission_energy_multiplier = 2.2
-
-
-func _make_material(color: Color, roughness: float, metallic: float = 0.0) -> StandardMaterial3D:
-  var material := StandardMaterial3D.new()
-  material.albedo_color = color
-  material.roughness = roughness
-  material.metallic = metallic
-  return material
+  _terrain_material = M_VALLEY_ASH
+  _rock_material = M_VALLEY_ROCK
+  _ruin_material = M_ARCHITECT_AGED_METAL
+  _dark_ruin_material = M_ARCHITECT_DARK_STONE
+  _preserved_material = M_ARCHITECT_AGED_METAL
+  _active_material = M_ARCHITECT_CYAN_ACTIVE
 
 
 func _build_world() -> void:
@@ -159,56 +153,35 @@ func _build_terrain() -> void:
 
 func _build_starting_cliff() -> void:
   var region := _add_region("StartingCliff", "secondary")
-  _add_box(region, "CliffMass", Vector3(0, 67, 720), Vector3(430, 134, 280), Vector3(0, 0, 0), _rock_material)
-  _add_box(region, "LaunchShelf", Vector3(0, 138, 574), Vector3(120, 12, 78), Vector3(0, 0, -2), _terrain_material)
-  _add_box(region, "WestVistaFrame", Vector3(-170, 185, 610), Vector3(34, 170, 38), Vector3(0, 8, 10), _rock_material)
-  _add_box(region, "EastVistaFrame", Vector3(180, 165, 645), Vector3(42, 135, 46), Vector3(0, -12, -7), _rock_material)
-  _add_box(region, "BrokenLaunchArch", Vector3(-88, 183, 600), Vector3(12, 80, 12), Vector3(0, 0, -4), _ruin_material)
-  _add_box(region, "BrokenLaunchLintel", Vector3(-45, 219, 600), Vector3(92, 12, 12), Vector3(0, 0, 7), _ruin_material)
-
+  _add_box(region, "CliffMass", Vector3(0, 67, 720), Vector3(430, 134, 280), Vector3.ZERO, _rock_material)
+  _add_box(region, "LaunchShelf", Vector3(0, 138, 574), Vector3(116, 12, 74), Vector3(0, 0, -2), _terrain_material)
+  _add_box(region, "BrokenRockLipWest", Vector3(-92, 132, 585), Vector3(72, 28, 55), Vector3(5, -12, 7), _rock_material)
+  _add_box(region, "BrokenRockLipEast", Vector3(105, 128, 594), Vector3(64, 24, 68), Vector3(-4, 15, -6), _rock_material)
 
 func _build_central_canyon() -> void:
   var region := _add_region("CentralCanyon", "secondary")
-  var centers := [
-    Vector3(95, 0, 400),
-    Vector3(140, 0, 230),
-    Vector3(125, 0, 60),
-    Vector3(75, 0, -115),
-    Vector3(25, 0, -295),
-    Vector3(-15, 0, -445),
+  region.set_meta("composition", "open monumental ruin field")
+  region.set_meta("minimum_visual_corridor_width", 260.0)
+  var west_buttresses := [
+    [Vector3(-235, 39, 390), Vector3(78, 82, 96), Vector3(0, -11, -5)],
+    [Vector3(-275, 48, 155), Vector3(92, 102, 88), Vector3(0, 13, 4)],
+    [Vector3(-240, 34, -95), Vector3(68, 72, 104), Vector3(0, -7, -8)],
+    [Vector3(-285, 52, -345), Vector3(86, 110, 92), Vector3(0, 16, 5)],
   ]
-  for index in range(centers.size()):
-    var center: Vector3 = centers[index]
-    var height := 95.0 + float(index % 3) * 25.0
-    var west_offset := -115.0 if index != 2 else -210.0
-    _add_box(
-      region,
-      "WestWall%02d" % index,
-      center + Vector3(west_offset, height * 0.5 - 2, 0),
-      Vector3(140, height, 165),
-      Vector3(0, -8 + index * 3, -3 + index),
-      _rock_material
-    )
-    if index != 2:
-      _add_box(
-        region,
-        "EastWall%02d" % index,
-        center + Vector3(115, height * 0.5 - 2, 0),
-        Vector3(140, height, 165),
-        Vector3(0, 7 - index * 2, 3 - index),
-        _rock_material
-      )
-
-  _add_box(region, "LowRockBridge", Vector3(100, 76, 125), Vector3(245, 16, 28), Vector3(0, 0, -4), _rock_material)
-  _add_box(region, "HighBrokenBridgeWest", Vector3(-5, 132, -255), Vector3(105, 14, 24), Vector3(0, 8, 8), _rock_material)
-  _add_box(region, "HighBrokenBridgeEast", Vector3(185, 125, -245), Vector3(92, 14, 24), Vector3(0, -10, -10), _rock_material)
-
-  _add_box(region, "EmbeddedRuinLeft", Vector3(-35, 57, 30), Vector3(18, 95, 55), Vector3(0, 8, 14), _dark_ruin_material)
-  _add_box(region, "EmbeddedRuinRight", Vector3(265, 44, -300), Vector3(18, 82, 62), Vector3(0, -12, -18), _dark_ruin_material)
-  _add_box(region, "CanyonArchWest", Vector3(-16, 34, -410), Vector3(14, 68, 14), Vector3.ZERO, _ruin_material)
-  _add_box(region, "CanyonArchEast", Vector3(50, 34, -410), Vector3(14, 68, 14), Vector3.ZERO, _ruin_material)
-  _add_box(region, "CanyonArchTop", Vector3(17, 70, -410), Vector3(80, 14, 14), Vector3(0, 0, 5), _ruin_material)
-
+  var east_buttresses := [
+    [Vector3(250, 43, 315), Vector3(84, 90, 92), Vector3(0, 9, 5)],
+    [Vector3(290, 35, 40), Vector3(72, 74, 105), Vector3(0, -14, -6)],
+    [Vector3(245, 49, -205), Vector3(94, 104, 86), Vector3(0, 8, 7)],
+    [Vector3(300, 37, -430), Vector3(70, 78, 100), Vector3(0, -12, -5)],
+  ]
+  for index in range(west_buttresses.size()):
+    var west: Array = west_buttresses[index]
+    _add_box(region, "WestButtress%02d" % index, west[0], west[1], west[2], _rock_material)
+  for index in range(east_buttresses.size()):
+    var east: Array = east_buttresses[index]
+    _add_box(region, "EastButtress%02d" % index, east[0], east[1], east[2], _rock_material)
+  _add_box(region, "FallenBridgeWest", Vector3(-152, 20, 108), Vector3(105, 15, 27), Vector3(12, 10, -18), _rock_material)
+  _add_box(region, "FallenBridgeEast", Vector3(175, 17, -260), Vector3(88, 14, 25), Vector3(-9, -14, 21), _rock_material)
 
 func _build_ash_basin() -> void:
   var region := _add_region("AshBasin", "secondary")
@@ -268,30 +241,20 @@ func _build_ruin_field() -> void:
 func _build_ancient_gate() -> void:
   var region := _add_region("AncientGate", "secondary")
   region.set_meta("conceptual_height_m", 135)
-  _add_box(region, "WestPier", Vector3(210, 60, 305), Vector3(42, 120, 58), Vector3(0, 4, -3), _dark_ruin_material)
-  _add_box(region, "EastPier", Vector3(335, 67, 305), Vector3(50, 134, 64), Vector3(0, -5, 4), _dark_ruin_material)
-  _add_box(region, "UpperSpanWest", Vector3(238, 128, 305), Vector3(75, 25, 48), Vector3(0, 0, 7), _dark_ruin_material)
-  _add_box(region, "UpperSpanEast", Vector3(327, 139, 305), Vector3(78, 25, 48), Vector3(0, 0, -8), _dark_ruin_material)
-  _add_box(region, "FallenGateSection", Vector3(390, 30, 350), Vector3(105, 24, 40), Vector3(8, -28, 18), _ruin_material)
-  _add_broken_ring(region, "GateCrown", Vector3(273, 122, 305), 72, 10, 12, [2, 3, 8], Vector3(90, 0, 0), _dark_ruin_material)
-
+  region.set_meta("composition", "open traversable broken gate")
+  _add_box(region, "WestPier", Vector3(215, 58, 305), Vector3(25, 116, 38), Vector3(0, 4, -5), _dark_ruin_material)
+  _add_box(region, "EastPier", Vector3(338, 64, 305), Vector3(28, 128, 42), Vector3(0, -5, 6), _dark_ruin_material)
+  _add_box(region, "FracturedCrownWest", Vector3(238, 122, 305), Vector3(52, 17, 34), Vector3(0, 0, 15), _ruin_material, false)
+  _add_box(region, "FracturedCrownEast", Vector3(319, 133, 305), Vector3(48, 17, 34), Vector3(0, 0, -18), _ruin_material, false)
+  _add_box(region, "FallenGateSection", Vector3(402, 22, 350), Vector3(86, 18, 32), Vector3(8, -28, 21), _ruin_material)
 
 func _build_spire() -> void:
   var region := _add_region("Spire", "primary")
   region.set_meta("conceptual_height_m", 360)
   region.set_meta("visible_from_spawn", true)
-  _add_cylinder(region, "LowerCore", Vector3(0, 110, -650), 42, 220, Vector3.ZERO, _dark_ruin_material)
-  _add_cylinder(region, "UpperCore", Vector3(0, 260, -650), 20, 160, Vector3(0, 0, -2), _dark_ruin_material)
-  _add_cylinder(region, "CrownNeedle", Vector3(8, 362, -650), 6, 85, Vector3(0, 0, 4), _preserved_material, false)
-  _add_box(region, "AsymmetricBladeWest", Vector3(-52, 205, -650), Vector3(18, 145, 44), Vector3(0, 0, 18), _ruin_material, false)
-  _add_box(region, "AsymmetricBladeEast", Vector3(42, 285, -650), Vector3(14, 105, 36), Vector3(0, 0, -24), _ruin_material, false)
-  _add_box(region, "MissingSectionScar", Vector3(18, 170, -615), Vector3(38, 58, 24), Vector3(15, 8, 22), _active_material, false)
-  _add_broken_ring(region, "LowerBrokenRing", Vector3(0, 128, -650), 88, 12, 14, [1, 2, 7, 11], Vector3(90, 0, 0), _ruin_material)
-  _add_broken_ring(region, "UpperBrokenRing", Vector3(0, 245, -650), 66, 9, 12, [0, 4, 5, 9], Vector3(78, 12, 7), _preserved_material)
-  _add_box(region, "FloatingFragmentA", Vector3(-105, 285, -635), Vector3(25, 58, 32), Vector3(12, 24, 18), _dark_ruin_material, false)
-  _add_box(region, "FloatingFragmentB", Vector3(88, 190, -680), Vector3(30, 24, 48), Vector3(-18, -20, 6), _dark_ruin_material, false)
-  _add_box(region, "FloatingFragmentC", Vector3(58, 335, -620), Vector3(15, 42, 18), Vector3(8, 12, -25), _active_material, false)
-
+  region.set_meta("silhouette", "single collision core supporting art module")
+  _add_cylinder(region, "DominantCollisionCore", Vector3(0, 150, -650), 34, 300, Vector3.ZERO, _dark_ruin_material)
+  _add_box(region, "CollisionFoundation", Vector3(0, 26, -650), Vector3(96, 52, 88), Vector3.ZERO, _dark_ruin_material)
 
 func _build_lost_places() -> void:
   var lost_places := Node3D.new()
@@ -451,8 +414,16 @@ func _add_box(
 
   var mesh_instance := MeshInstance3D.new()
   mesh_instance.name = "Mesh"
-  var mesh := BoxMesh.new()
-  mesh.size = size
+  var mesh: PrimitiveMesh
+  if material == _rock_material:
+    var rock_mesh := PrismMesh.new()
+    rock_mesh.size = size
+    rock_mesh.left_to_right = 0.3
+    mesh = rock_mesh
+  else:
+    var box_mesh := BoxMesh.new()
+    box_mesh.size = size
+    mesh = box_mesh
   mesh.material = material
   mesh_instance.mesh = mesh
   container.add_child(mesh_instance)

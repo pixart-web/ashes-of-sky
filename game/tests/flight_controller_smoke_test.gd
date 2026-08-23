@@ -75,8 +75,9 @@ func _run() -> void:
   )
 
   var visual_pivot := lunaris.get_node("VisualPivot") as Node3D
-  var left_wing := visual_pivot.get_node("LeftWing") as MeshInstance3D
-  var right_wing := visual_pivot.get_node("RightWing") as MeshInstance3D
+  var lunaris_visual := visual_pivot.get_node("LunarisVisual") as LunarisVisual
+  var left_wing := lunaris_visual.get_node("WingLeft") as Node3D
+  var right_wing := lunaris_visual.get_node("WingRight") as Node3D
   _assert(lunaris.visual_pivot == visual_pivot, "Controller references the visual banking pivot.")
   Input.action_press(&"flight_yaw_left")
   var yaw_before := lunaris.rotation.y

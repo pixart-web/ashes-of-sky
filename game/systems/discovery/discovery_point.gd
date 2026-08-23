@@ -42,7 +42,7 @@ func _exit_tree() -> void:
 
 
 func _on_body_entered(body: Node3D) -> void:
-  if body is not LunarisFlightController:
+  if body is not LunarisFlightController and body is not GroundPlayer:
     return
   if requires_interaction:
     discovery_manager.set_interaction_candidate(discovery_data, self, true)
@@ -51,5 +51,5 @@ func _on_body_entered(body: Node3D) -> void:
 
 
 func _on_body_exited(body: Node3D) -> void:
-  if body is LunarisFlightController and requires_interaction:
+  if (body is LunarisFlightController or body is GroundPlayer) and requires_interaction:
     discovery_manager.set_interaction_candidate(discovery_data, self, false)

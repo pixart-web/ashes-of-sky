@@ -42,7 +42,10 @@ func _run() -> void:
 
   var gate := valley.get_node("AncientGate")
   _assert(gate.get_meta("conceptual_height_m") > 100, "The Ancient Gate provides a giant scale reference.")
-  _assert(valley.get_node("CentralCanyon").get_child_count() >= 15, "The canyon has walls, bridges, exits, and embedded ruins.")
+  var canyon := valley.get_node("CentralCanyon")
+  _assert(float(canyon.get_meta("minimum_visual_corridor_width")) >= 250.0, "The canyon preserves a broad open flight corridor.")
+  _assert(canyon.find_children("*Buttress*", "Node3D", false, false).size() >= 8, "Isolated canyon buttresses preserve monumental scale without forming walls.")
+  _assert(canyon.has_node("FallenBridgeWest") and canyon.has_node("FallenBridgeEast"), "Fallen bridge fragments retain navigational rhythm without closing the route.")
   _assert(valley.get_node("RuinField").get_child_count() >= 15, "The Ruin Field supports weaving flight.")
 
   var routes := valley.get_node("ExplorationRoutes")

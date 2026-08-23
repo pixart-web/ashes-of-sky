@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "M_Lunaris_WingMembrane"
+albedo_color = Color(0.30, 0.29, 0.27, 1)
+roughness = 0.86
+cull_mode = 2

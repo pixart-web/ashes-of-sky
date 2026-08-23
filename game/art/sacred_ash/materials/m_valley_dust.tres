@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "M_Valley_Dust"
+albedo_color = Color(0.34, 0.285, 0.235, 1)
+roughness = 1.0

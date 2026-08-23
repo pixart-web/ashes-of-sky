@@ -51,8 +51,8 @@ func _ready() -> void:
     echoes,
     "LastSignal",
     ECHO_LAST_SIGNAL,
-    Vector3(555, 42, -68),
-    _sphere_shape(27),
+    Vector3(555, 11, -68),
+    _sphere_shape(14),
     true
   )
   _add_echo_accent(echoes)

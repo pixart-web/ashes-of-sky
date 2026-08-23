@@ -63,6 +63,10 @@ godot --path game
 | Recenter camera | C | Right stick click |
 | Exploration Journal | J | Back / Select button |
 | Skip opening | Enter | North face button |
+| Land / Take off | L | East face button |
+| Ground movement | W / A / S / D | Left stick |
+| Ground run | Shift | South face button |
+| Ground interact / Mount | E | West face button |
 
 Lunaris always maintains a minimum forward speed. Releasing accelerate or boost returns the creature gradually toward cruise speed. Manual camera look returns naturally to the chase view after a short delay. The current altitude telemetry uses world-space Y rather than terrain-relative height.
 
@@ -73,6 +77,26 @@ Flight presentation uses procedural Godot particles and placeholder geometry onl
 The main scene now begins with the handcrafted First Flight sequence. It moves from the Elyndra/Silence introduction through Lunaris's cliff leap and freefall into the existing flight controller without loading another scene. Set `play_opening_on_start` on `FirstFlightSequence` to `false` for a direct development start. Its optional timeline overlay reports the current opening state, elapsed sequence time, and control status, and is disabled by default.
 
 The sequence exposes event hooks for ambient wind, distant environmental rumble, Lunaris movement, wing deployment, title reveal, and gameplay handoff. No production audio files are included yet; the opening remains fully functional when played silently.
+
+## Sacred Ash art target
+
+The Starting Cliff, open Central Canyon, Valley vista, and Spire use the **Sacred Ash** in-engine art target: dark ceremonial Architect stone, aged metal, restrained ash and rock tones, warm low sunlight, cool shadows, distance haze, and rare cyan active technology. A lightweight procedural kit supplies eight reusable forms: monumental arch, vertical blade, broken wall, Divided Halo, ceremonial pillar, collapsed monument, fly-through gate, and Spire module. The **Divided Halo** remains the primary Architect symbol. All geometry, materials, sky, fog, glow, and particles are Godot-native placeholders; no textures, HDRIs, plugins, or external production assets are included.
+
+Development comparison controls are disabled from normal UI:
+
+| Action | Key |
+| --- | --- |
+| Clean screenshot mode | F6 |
+| Toggle `SacredAshArtTargetCamera` | F9 |
+| Toggle fog | F10 |
+| Toggle Starting Cliff ash particles | F11 |
+| Highlight cyan emission | F12 |
+
+The art overlay has no collision and uses shared primitive meshes/materials. Starting Cliff ash is limited to 28 small, slow, horizontal-drifting, low-opacity particles. The comparison camera never activates automatically and does not interfere with the First Flight or chase cameras.
+
+## Lunaris visual lab
+
+Open `res://art/lunaris/lunaris_visual_lab.tscn` to review the current creature anatomy. Use **1–5** for the standard cameras, **Z/X/C/V** for folded, glide, full-spread, and flap-test poses, **R** to toggle Kael, **B** for the single-material silhouette review, and **Space** for turntable rotation. Each wing uses four articulated structural sections and three broad membrane regions.
 
 ## Valley of Ash prototype
 
@@ -85,6 +109,12 @@ The debug HUD can display the current region, world position, and distance to Th
 Regions, landmarks, Lost Places, Echoes, and Anomalies use stable discovery IDs and persist for the current session. Automatic discoveries use spatial volumes; Echoes require the semantic `interact` action. The Journal lists only recovered knowledge and safely pauses flight while open.
 
 Press **F8** during development to reset session discoveries for repeated first-discovery testing. This debug action awards no XP, loot, money, or other progression.
+
+## Silent Chamber ground prototype
+
+The Silent Chamber supports the complete flight-to-ground loop. Landing is available only over its sheltered western platform when Lunaris is below 18 m/s, low, and aligned toward the entrance. After the procedural landing and dismount, Kael uses the existing interaction and Journal systems. Return to the left side of Lunaris and press **E** to mount, then **L** or **E** to take off.
+
+For rapid development, press **F7** to start directly at `SILENT CHAMBER — GROUND`. Press **F5** to recover Kael to the chamber entrance if the ground prototype becomes invalid. These shortcuts do not alter normal game startup.
 
 ## Repository layout
 

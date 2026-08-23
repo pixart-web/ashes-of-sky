@@ -66,8 +66,9 @@ var discovery_manager: DiscoveryManager
 var discovery_ui: DiscoveryUI
 var debug_hud: CanvasLayer
 var opening_ui: FirstFlightUI
-var left_wing: MeshInstance3D
-var right_wing: MeshInstance3D
+var lunaris_visual: LunarisVisual
+var left_wing: Node3D
+var right_wing: Node3D
 
 var _left_wing_base_rotation: Vector3
 var _right_wing_base_rotation: Vector3
@@ -94,8 +95,9 @@ func _ready() -> void:
     set_process_unhandled_input(false)
     return
 
-  left_wing = flight_player.get_node("VisualPivot/LeftWing") as MeshInstance3D
-  right_wing = flight_player.get_node("VisualPivot/RightWing") as MeshInstance3D
+  lunaris_visual = flight_player.get_node("VisualPivot/LunarisVisual") as LunarisVisual
+  left_wing = lunaris_visual.get_node("WingLeft") as Node3D
+  right_wing = lunaris_visual.get_node("WingRight") as Node3D
   _left_wing_base_rotation = left_wing.rotation
   _right_wing_base_rotation = right_wing.rotation
 
@@ -160,7 +162,7 @@ func start_opening() -> void:
   opening_ui.reset_for_opening()
   _set_wing_fold(0.88)
   _set_direct_camera_pose(
-    Vector3(-210, 245, 780),
+    Vector3(-62, 160, 724),
     Vector3(0, 95, -300),
     58.0
   )
@@ -234,18 +236,18 @@ func _update_establishing() -> void:
   var progress := _state_progress(establishing_shot_duration)
   opening_ui.set_black_alpha(1.0 - smoothstep(0.0, 0.28, progress))
   opening_ui.set_opening_text_alpha(0.0, 1.0 - smoothstep(0.0, 0.18, progress))
-  var camera_position := Vector3(-210, 245, 780).lerp(Vector3(170, 220, 740), _ease(progress))
-  var look_target := Vector3(0, 95, -300).lerp(Vector3(0, 105, -420), progress)
+  var camera_position := Vector3(-62, 160, 724).lerp(Vector3(20, 158, 704), _ease(progress))
+  var look_target := Vector3(0, 95, -300).lerp(Vector3(0, 90, -500), progress)
   _set_direct_camera_pose(camera_position, look_target, lerpf(58.0, 62.0, progress))
 
 
 func _update_lunaris_shot() -> void:
   var progress := _ease(_state_progress(lunaris_shot_duration))
-  var camera_position := Vector3(170, 220, 740).lerp(
+  var camera_position := Vector3(20, 158, 704).lerp(
     flight_player.global_position + Vector3(22, 10, 30),
     progress
   )
-  var scenic_target := Vector3(0, 105, -420)
+  var scenic_target := Vector3(0, 90, -500)
   var lunaris_target := flight_player.global_position + Vector3(0, 0, -35)
   _set_direct_camera_pose(
     camera_position,
@@ -506,18 +508,7 @@ func _set_direct_camera_pose(
 
 
 func _set_wing_fold(amount: float) -> void:
-  var fold := clampf(amount, 0.0, 1.0)
-  left_wing.rotation = _left_wing_base_rotation + Vector3(
-    deg_to_rad(24.0),
-    deg_to_rad(62.0),
-    deg_to_rad(48.0)
-  ) * fold
-  right_wing.rotation = _right_wing_base_rotation + Vector3(
-    deg_to_rad(24.0),
-    deg_to_rad(-62.0),
-    deg_to_rad(-48.0)
-  ) * fold
-
+  lunaris_visual.set_wing_fold(clampf(amount, 0.0, 1.0))
 
 func _state_duration(current_state: OpeningState) -> float:
   match current_state:

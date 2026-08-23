@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "M_Lunaris_OrganicBody"
+albedo_color = Color(0.075, 0.07, 0.068, 1)
+metallic = 0.08
+roughness = 0.78
