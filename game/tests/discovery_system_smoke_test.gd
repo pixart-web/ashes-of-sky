@@ -21,6 +21,8 @@ func _run() -> void:
   opening_sequence.play_opening_on_start = false
   root.add_child(flight_test)
   await _wait_for_physics_frames(5)
+  # AOTS-006 teleports through Ash Basin; isolate Discovery from the AOTS-011 encounter trigger.
+  (flight_test.get_node("AerialCombatController") as AerialCombatController).set_process(false)
 
   var manager := flight_test.get_node("DiscoveryManager") as DiscoveryManager
   var discovery_layer := flight_test.get_node("WorldDiscovery") as ValleyDiscoveryLayer

@@ -47,8 +47,11 @@ var camera_mode: StringName = &"CHASE"
 var target_bank: float = 0.0
 var manual_yaw_offset: float = 0.0
 var manual_pitch_offset: float = 0.0
+var combat_target: Node3D
+var combat_framing_strength: float = 0.18
 
 var _manual_idle_time: float = 0.0
+var _combat_impulse := Vector3.ZERO
 
 
 func _ready() -> void:
@@ -66,8 +69,16 @@ func _ready() -> void:
   global_basis = _desired_camera_basis()
   collision_probe.add_excluded_object(flight_target.get_rid())
   collision_probe.spring_length = target_distance
-  camera.position = Vector3(0.0, 0.0, current_distance)
+  camera.position = Vector3(0.0, 0.0, current_distance) + _combat_impulse
   camera.fov = base_fov
+
+
+func add_combat_impulse(strength: float) -> void:
+  _combat_impulse += Vector3(strength * 0.65, strength * 0.35, 0.0)
+
+
+func set_combat_target(target: Node3D) -> void:
+  combat_target = target
 
 
 func _process(delta: float) -> void:
@@ -78,6 +89,7 @@ func _process(delta: float) -> void:
   _update_follow(delta)
   _update_distance_and_collision(delta)
   _update_fov(delta)
+  _combat_impulse = _combat_impulse.lerp(Vector3.ZERO, 1.0 - exp(-11.0 * delta))
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -158,7 +170,7 @@ func _update_distance_and_collision(delta: float) -> void:
     )
     camera_mode = _desired_camera_mode()
 
-  camera.position = Vector3(0.0, 0.0, current_distance)
+  camera.position = Vector3(0.0, 0.0, current_distance) + _combat_impulse
 
 
 func _update_fov(delta: float) -> void:
@@ -186,6 +198,9 @@ func _desired_camera_basis() -> Basis:
     - target_right * yaw_input * look_ahead_strength
     + Vector3.UP * pitch_input * look_ahead_strength
   )
+  if is_instance_valid(combat_target):
+    var enemy_direction := combat_target.global_position - look_target
+    look_target += enemy_direction * combat_framing_strength
   var desired_basis := Transform3D(Basis.IDENTITY, global_position).looking_at(
     look_target,
     Vector3.UP

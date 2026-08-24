@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3]
+[gd_scene load_steps=27 format=3]
 
 [ext_resource type="Script" path="res://ui/debug_hud.gd" id="1_hud"]
 [ext_resource type="Script" path="res://actors/lunaris/lunaris_flight_controller.gd" id="2_flight_controller"]
@@ -15,6 +15,8 @@
 [ext_resource type="Script" path="res://actors/kael/ground_player.gd" id="13_ground_player"]
 [ext_resource type="Script" path="res://world/silent_chamber/silent_chamber_ground_world.gd" id="14_chamber_ground"]
 [ext_resource type="Script" path="res://systems/traversal/traversal_coordinator.gd" id="15_traversal"]
+[ext_resource type="Script" path="res://combat/ash_warden.gd" id="16_warden"]
+[ext_resource type="Script" path="res://combat/aerial_combat_controller.gd" id="17_combat"]
 
 [sub_resource type="BoxShape3D" id="LunarisCollisionShape"]
 size = Vector3(5.8, 1.0, 3.6)
@@ -137,6 +139,19 @@ max_distance = 80.0
 [node name="WorldDiscovery" type="Node3D" parent="."]
 script = ExtResource("7_discovery_layer")
 discovery_manager_path = NodePath("../DiscoveryManager")
+
+[node name="AshWarden" type="Node3D" parent="."]
+position = Vector3(-470, 82, 225)
+script = ExtResource("16_warden")
+
+[node name="AerialCombatController" type="Node" parent="."]
+script = ExtResource("17_combat")
+flight_player_path = NodePath("../Lunaris")
+flight_camera_path = NodePath("../FlightCameraRig")
+warden_path = NodePath("../AshWarden")
+discovery_ui_path = NodePath("../DiscoveryUI")
+exploration_hud_path = NodePath("../DebugHUD")
+traversal_path = NodePath("../TraversalCoordinator")
 
 [node name="SacredAshArtTarget" type="Node3D" parent="."]
 script = ExtResource("11_sacred_ash")

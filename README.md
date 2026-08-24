@@ -20,7 +20,7 @@ The core experience combines:
 
 Pre-production / Valley of Ash World Prototype.
 
-The current sprint combines playable flight, a comfortable chase camera, lightweight speed presentation, and the first explorable Valley of Ash world-layout prototype. Combat is intentionally out of scope.
+The current sprint integrates playable flight, the Valley of Ash traversal loop, discovery, ground exploration, and the first lightweight aerial combat prototype. RPG progression remains intentionally out of scope.
 
 ## Development principle
 
@@ -115,6 +115,10 @@ Press **F8** during development to reset session discoveries for repeated first-
 The Silent Chamber supports the complete flight-to-ground loop. Landing is available only over its sheltered western platform when Lunaris is below 18 m/s, low, and aligned toward the entrance. After the procedural landing and dismount, Kael uses the existing interaction and Journal systems. Return to the left side of Lunaris and press **E** to mount, then **L** or **E** to take off.
 
 For rapid development, press **F7** to start directly at `SILENT CHAMBER — GROUND`. Press **F5** to recover Kael to the chamber entrance if the ground prototype becomes invalid. These shortcuts do not alter normal game startup.
+
+## Aerial combat prototype
+
+The Ash Basin contains the development Ash Warden encounter. Combat preserves normal Lunaris flight. Use **Tab** to lock the target, **Left Mouse** for Pulse, hold/release **F** for Focus, and **Q/E** to evade left/right. On gamepad, use **L3**, **R1**, **L1**, and **D-pad left/right** respectively. Open `res://combat/test/aerial_combat_lab.tscn` for direct iteration without replaying First Flight. Combat adds no progression, loot, equipment, or ground attacks.
 
 ## Repository layout
 
