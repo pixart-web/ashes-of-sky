@@ -2,6 +2,9 @@ class_name ValleyOfAsh
 extends Node3D
 
 signal world_navigation_updated(region: StringName, position: Vector3, distance_to_spire: float)
+signal spire_state_changed(state_id: StringName)
+
+enum SpireState { DORMANT, AWAKENED, SIGNAL }
 
 const SPAWN_POSITION := Vector3(0.0, 150.0, 650.0)
 const SPIRE_POSITION := Vector3(0.0, 0.0, -650.0)
@@ -18,6 +21,10 @@ const M_VALLEY_ROCK := preload("res://art/sacred_ash/materials/m_valley_rock.tre
 @export var navigation_readout_enabled: bool = true
 
 var flight_player: LunarisFlightController
+var spire_state: SpireState = SpireState.DORMANT
+var spire_activation_core: Node3D
+var spire_signal_halo: Node3D
+var spire_focus_target: Marker3D
 
 var _terrain_material: StandardMaterial3D
 var _rock_material: StandardMaterial3D
@@ -255,6 +262,12 @@ func _build_spire() -> void:
   region.set_meta("silhouette", "single collision core supporting art module")
   _add_cylinder(region, "DominantCollisionCore", Vector3(0, 150, -650), 34, 300, Vector3.ZERO, _dark_ruin_material)
   _add_box(region, "CollisionFoundation", Vector3(0, 26, -650), Vector3(96, 52, 88), Vector3.ZERO, _dark_ruin_material)
+  spire_activation_core = _add_cylinder(region, "PrologueActivationCore", Vector3(0, 185, -650), 4.5, 170, Vector3.ZERO, _active_material, false)
+  spire_signal_halo = _add_broken_ring(region, "PrologueSignalHalo", Vector3(0, 238, -650), 48, 2.2, 12, [1, 2, 7], Vector3(90, 0, 0), _active_material)
+  spire_focus_target = Marker3D.new()
+  spire_focus_target.name = "PrologueFocusTarget"
+  spire_focus_target.position = Vector3(0, 210, -650)
+  region.add_child(spire_focus_target)
 
 func _build_lost_places() -> void:
   var lost_places := Node3D.new()
@@ -504,3 +517,34 @@ func _add_broken_ring(
       false
     )
   return ring
+
+
+func set_spire_state(next_state: SpireState, animated: bool = true) -> void:
+  spire_state = next_state
+  spire_activation_core.visible = spire_state >= SpireState.AWAKENED
+  spire_signal_halo.visible = spire_state == SpireState.SIGNAL
+  if animated and spire_activation_core.visible:
+    var core_tween := spire_activation_core.create_tween()
+    core_tween.tween_property(spire_activation_core, "scale:y", 1.0, 1.4).from(0.12)
+  if animated and spire_signal_halo.visible:
+    var halo_tween := spire_signal_halo.create_tween()
+    halo_tween.set_parallel(true)
+    halo_tween.tween_property(spire_signal_halo, "rotation_degrees:y", spire_signal_halo.rotation_degrees.y + 14.0, 2.2)
+    halo_tween.tween_property(spire_signal_halo, "scale", Vector3.ONE * 1.12, 0.8)
+    halo_tween.chain().tween_property(spire_signal_halo, "scale", Vector3.ONE, 1.4)
+  spire_state_changed.emit([&"dormant", &"awakened", &"signal"][spire_state])
+
+
+func reset_prologue_reactions() -> void:
+  spire_state = SpireState.DORMANT
+  if spire_activation_core == null:
+    return
+  spire_activation_core.visible = false
+  spire_activation_core.scale = Vector3.ONE
+  spire_signal_halo.visible = false
+  spire_signal_halo.scale = Vector3.ONE
+  spire_signal_halo.rotation_degrees = Vector3(90, 0, 0)
+
+
+func get_spire_focus_target() -> Node3D:
+  return spire_focus_target

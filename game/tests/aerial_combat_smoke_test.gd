@@ -30,6 +30,8 @@ func _run() -> void:
   _assert(InputMap.has_action(&"evade_left") and InputMap.has_action(&"evade_right"), "Directional evade actions exist.")
   _assert(not ground.player_input_enabled, "GroundPlayer remains exploration-only during flight combat.")
   _assert(not combat.combat_hud.visible, "Combat HUD is hidden during exploration.")
+  warden.set_world_state(AshWarden.WorldState.AWAKENED, false)
+  combat.set_encounter_enabled(true)
 
   warden.global_basis = Basis.IDENTITY
   _assert(combat.classify_sector(warden.global_position + Vector3(0, 0, -60)) == &"FRONT", "FRONT sector classification follows Warden orientation.")

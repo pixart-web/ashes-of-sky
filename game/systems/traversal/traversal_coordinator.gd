@@ -263,3 +263,24 @@ func _build_prompt() -> void:
   prompt_label.add_theme_color_override("font_color", Color(0.84, 0.82, 0.72))
   prompt_label.visible = false
   prompt_layer.add_child(prompt_label)
+
+
+func reset_to_flight() -> void:
+  if flight_player == null or ground_player == null or flight_camera == null:
+    return
+  ground_player.set_player_input_enabled(false)
+  ground_player.visible = false
+  flight_player.visible = true
+  flight_player.set_player_input_enabled(true)
+  flight_player.flight_state = &"CRUISE"
+  if flight_player.has_node("VisualPivot/LunarisVisual"):
+    var visual := flight_player.get_node("VisualPivot/LunarisVisual") as LunarisVisual
+    visual.set_rider_visible(true)
+    visual.set_wing_pose(LunarisVisual.WingPose.GLIDE)
+  flight_camera.set_process(true)
+  flight_camera.set_process_unhandled_input(true)
+  flight_camera.camera.current = true
+  if discovery_ui != null:
+    discovery_ui.set_exploration_input_enabled(true)
+  prompt_label.visible = false
+  _set_state(TraversalState.FLIGHT)

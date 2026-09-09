@@ -6,8 +6,10 @@ signal attack_executed(attack_name: StringName)
 signal guard_broken(side: StringName)
 signal core_exposed
 signal defeated
+signal world_state_changed(state_id: StringName)
 
 enum AIState { TRACK, FRONTAL_TELEGRAPH, FRONTAL_ATTACK, SWEEP_TELEGRAPH, SWEEP, RECOVER, CORE_EXPOSED, DEFEATED }
+enum WorldState { DORMANT, AWAKENED, DEFEATED }
 
 const MAX_GUARD_HEALTH := 25.0
 const MAX_CORE_HEALTH := 50.0
@@ -21,6 +23,8 @@ var phase_two: bool = false
 var queued_attack: StringName = &""
 var state_time: float = 0.0
 var target_position: Vector3
+var world_state: WorldState = WorldState.AWAKENED
+var spawn_position: Vector3
 var impact_time: float = 0.0
 
 var body_visual: Node3D
@@ -36,6 +40,7 @@ var _energy := preload("res://art/sacred_ash/materials/m_architect_cyan_active.t
 
 
 func _ready() -> void:
+  spawn_position = global_position
   _build_visual()
   reset_warden()
 
@@ -51,8 +56,46 @@ func _process(delta: float) -> void:
       var speed := 1.0 - exp(-(1.25 if phase_two else 0.75) * delta)
       global_basis = Basis(global_basis.get_rotation_quaternion().slerp(desired.get_rotation_quaternion(), speed))
   if ai_state == AIState.DEFEATED:
-    position.y -= 2.2 * delta
+    global_position.y = maxf(spawn_position.y - 12.0, global_position.y - 2.2 * delta)
     rotation.z = move_toward(rotation.z, deg_to_rad(18.0), delta * 0.18)
+
+
+func set_world_state(next_state: WorldState, animated: bool = true) -> void:
+  world_state = next_state
+  match world_state:
+    WorldState.DORMANT:
+      reset_warden()
+      combat_active = false
+      body_visual.rotation_degrees = Vector3(0, 0, -11)
+      left_guard_visual.position = Vector3(-4.2, -3.2, 2.4)
+      right_guard_visual.position = Vector3(4.2, -3.2, 2.4)
+      lance_visual.scale = Vector3.ONE * 0.78
+    WorldState.AWAKENED:
+      reset_warden()
+      combat_active = false
+      if animated:
+        body_visual.rotation_degrees = Vector3(0, 0, -11)
+        left_guard_visual.position = Vector3(-4.2, -3.2, 2.4)
+        right_guard_visual.position = Vector3(4.2, -3.2, 2.4)
+        var tween := create_tween().set_parallel(true)
+        tween.tween_property(body_visual, "rotation_degrees", Vector3.ZERO, 1.7)
+        tween.tween_property(left_guard_visual, "position", Vector3(-7.0, 0.0, 0.5), 1.7)
+        tween.tween_property(right_guard_visual, "position", Vector3(7.0, 0.0, 0.5), 1.7)
+        core_visual.visible = true
+        tween.chain().tween_callback(func(): core_visual.visible = false)
+    WorldState.DEFEATED:
+      combat_active = false
+      ai_state = AIState.DEFEATED
+      left_guard_health = 0.0
+      right_guard_health = 0.0
+      core_health = 0.0
+      left_guard_visual.visible = false
+      right_guard_visual.visible = false
+      core_visual.visible = true
+      core_visual.scale = Vector3.ONE * 0.45
+      global_position = spawn_position + Vector3.DOWN * 6.0
+      rotation.z = deg_to_rad(18.0)
+  world_state_changed.emit([&"dormant", &"awakened", &"defeated"][world_state])
 
 
 func set_combat_active(enabled: bool) -> void:
@@ -140,7 +183,11 @@ func reset_warden() -> void:
   ai_state = AIState.TRACK
   queued_attack = &""
   state_time = 0.0
+  global_position = spawn_position
   rotation = Vector3.ZERO
+  body_visual.rotation = Vector3.ZERO
+  left_guard_visual.position = Vector3(-7.0, 0.0, 0.5)
+  right_guard_visual.position = Vector3(7.0, 0.0, 0.5)
   left_guard_visual.visible = true
   right_guard_visual.visible = true
   core_visual.visible = false
@@ -191,11 +238,13 @@ func _begin_recovery() -> void:
 
 
 func _defeat() -> void:
+  world_state = WorldState.DEFEATED
   core_health = 0.0
   combat_active = false
   ai_state = AIState.DEFEATED
   state_time = 0.0
   _set_charge_visual(0.0)
+  world_state_changed.emit(&"defeated")
   defeated.emit()
 
 

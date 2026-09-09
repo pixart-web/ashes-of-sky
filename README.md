@@ -118,8 +118,22 @@ For rapid development, press **F7** to start directly at `SILENT CHAMBER — GRO
 
 ## Aerial combat prototype
 
-The Ash Basin contains the development Ash Warden encounter. Combat preserves normal Lunaris flight. Use **Tab** to lock the target, **Left Mouse** for Pulse, hold/release **F** for Focus, and **Q/E** to evade left/right. On gamepad, use **L3**, **R1**, **L1**, and **D-pad left/right** respectively. Open `res://combat/test/aerial_combat_lab.tscn` for direct iteration without replaying First Flight. Combat adds no progression, loot, equipment, or ground attacks.
+The Ash Basin contains the Ash Warden, initially dormant until The Last Signal changes the Valley. Combat preserves normal Lunaris flight. Use **Tab** to lock the target, **Left Mouse** for Pulse, hold/release **F** for Focus, and **Q/E** to evade left/right. On gamepad, use **L3**, **R1**, **L1**, and **D-pad left/right** respectively. Open `res://combat/test/aerial_combat_lab.tscn` for direct iteration without replaying First Flight. Combat adds no progression, loot, equipment, or ground attacks.
 
+## Prologue gameplay loop
+
+The main scene now connects First Flight, free discovery, the Silent Chamber, The Last Signal, the awakened Ash Warden, and the Spire aftermath without changing scenes. Guidance remains environmental: there are no objective arrows, mission checklists, XP, loot, or equipment rewards. The Journal gains a concise **Threads** section only after The Last Signal is recovered.
+
+Development-only shortcuts are intentionally absent from normal UI:
+
+| Shortcut | Prologue state |
+| --- | --- |
+| Ctrl+0 | Reset Prologue state |
+| Ctrl+1 | Start after First Flight |
+| Ctrl+2 | Start at Silent Chamber |
+| Ctrl+3 | Start after Last Signal |
+| Ctrl+4 | Start at Warden |
+| Ctrl+5 | Start after Warden |
 ## Repository layout
 
 - `game/` — Godot project and game resources

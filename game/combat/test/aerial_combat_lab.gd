@@ -7,4 +7,4 @@ func _ready() -> void:
   game.name = "CombatGame"
   (game.get_node("FirstFlightSequence") as FirstFlightSequence).play_opening_on_start = false
   add_child(game)
-  (game.get_node("AerialCombatController") as AerialCombatController).start_combat_debug.call_deferred()
+  (game.get_node("PrologueDirector") as PrologueDirector).start_at_warden_debug.call_deferred()

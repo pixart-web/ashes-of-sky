@@ -1,6 +1,9 @@
 class_name SilentChamberGroundWorld
 extends Node3D
 
+signal chamber_response_changed(responded: bool)
+signal inner_door_response_changed(responded: bool)
+
 const LANDING_POSITION := Vector3(278.0, 8.5, -68.0)
 const DISMOUNT_POSITION := Vector3(283.0, 5.1, -62.0)
 const ENTRANCE_POSITION := Vector3(350.0, 5.1, -68.0)
@@ -11,6 +14,13 @@ const INNER_DOOR_POSITION := Vector3(608.0, 5.0, -68.0)
 var landing_zone: Area3D
 var mount_zone: Area3D
 var inner_door_zone: Area3D
+var chamber_responded: bool = false
+var inner_door_responded: bool = false
+var response_lines: Node3D
+var inner_door_fracture: MeshInstance3D
+var dormant_door_energy: MeshInstance3D
+var main_broken_halo: Node3D
+var sealed_slab_visual: MeshInstance3D
 
 var _stone := preload("res://art/sacred_ash/materials/m_architect_dark_stone.tres")
 var _metal := preload("res://art/sacred_ash/materials/m_architect_aged_metal.tres")
@@ -25,6 +35,8 @@ func _ready() -> void:
   _build_main_chamber()
   _build_lighting()
   _build_interaction_volumes()
+  _build_prologue_reactions()
+  reset_prologue_reactions()
 
 
 func _hide_superseded_flight_markers() -> void:
@@ -53,6 +65,7 @@ func _build_exterior() -> void:
   _add_box(exterior, "BrokenArchNorth", Vector3(346, 55, -80), Vector3(10, 8, 24), Vector3(18, 0, 0), _metal, false)
   _add_box(exterior, "BrokenArchSouth", Vector3(346, 49, -55), Vector3(10, 8, 17), Vector3(-22, 0, 0), _metal, false)
   _add_halo(exterior, "DamagedLandingHalo", Vector3(315, 23, -68), 18.0, 2.1, [1, 2, 6], _metal)
+  _add_halo(exterior, "ActiveApproachHalo", Vector3(343, 34, -68), 7.0, 0.55, [0, 1, 5, 6, 8], _cyan)
 
 
 func _build_descent_and_antechamber() -> void:
@@ -179,3 +192,59 @@ func _add_halo(parent: Node3D, node_name: String, center: Vector3, radius: float
     mesh.material = material
     segment.mesh = mesh
     halo.add_child(segment)
+
+
+func set_chamber_responded(responded: bool) -> void:
+  if chamber_responded == responded and response_lines.visible == responded:
+    return
+  chamber_responded = responded
+  response_lines.visible = responded
+  main_broken_halo.rotation_degrees.x = 4.0 if responded else 0.0
+  if responded:
+    var tween := main_broken_halo.create_tween()
+    tween.tween_property(main_broken_halo, "rotation_degrees:x", 4.0, 1.2).from(-3.0)
+  chamber_response_changed.emit(responded)
+
+
+func set_inner_door_responded(responded: bool) -> void:
+  if inner_door_responded == responded and inner_door_fracture.visible == responded:
+    return
+  inner_door_responded = responded
+  inner_door_fracture.visible = responded
+  dormant_door_energy.visible = responded
+  sealed_slab_visual.position.x = INNER_DOOR_POSITION.x + 8.45 if responded else INNER_DOOR_POSITION.x + 8.0
+  inner_door_response_changed.emit(responded)
+
+
+func reset_prologue_reactions() -> void:
+  chamber_responded = false
+  inner_door_responded = false
+  if response_lines == null:
+    return
+  response_lines.visible = false
+  inner_door_fracture.visible = false
+  dormant_door_energy.visible = false
+  main_broken_halo.rotation_degrees.x = 0.0
+  sealed_slab_visual.position.x = INNER_DOOR_POSITION.x + 8.0
+
+
+func _build_prologue_reactions() -> void:
+  response_lines = Node3D.new()
+  response_lines.name = "ArchitectResponseLines"
+  add_child(response_lines)
+  for index in range(5):
+    _add_box(
+      response_lines,
+      "ResponseLine%02d" % index,
+      Vector3(486.0 + index * 22.0, 4.05, -68.0 + (-1.0 if index % 2 == 0 else 1.0) * 13.0),
+      Vector3(16.0, 0.12, 0.38),
+      Vector3.ZERO,
+      _cyan,
+      false
+    )
+  var door := get_node("MainChamberGroundPass/InnerDoor") as Node3D
+  _add_box(door, "InnerDoorFracture", INNER_DOOR_POSITION + Vector3(-0.35, 29, 0), Vector3(0.22, 31, 0.3), Vector3.ZERO, _cyan, false)
+  inner_door_fracture = door.get_node("InnerDoorFracture") as MeshInstance3D
+  dormant_door_energy = door.get_node("DormantEnergy") as MeshInstance3D
+  sealed_slab_visual = door.get_node("SealedSlab") as MeshInstance3D
+  main_broken_halo = get_node("MainChamberGroundPass/MainBrokenHalo") as Node3D

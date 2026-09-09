@@ -43,6 +43,7 @@ var evade_recharge_progress: float = 0.0
 var evade_protection: float = 0.0
 var state_time: float = 0.0
 var encounter_completed: bool = false
+var encounter_enabled: bool = true
 var focus_visual: MeshInstance3D
 var evade_visual: Node3D
 
@@ -127,6 +128,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func begin_encounter(force: bool = false) -> bool:
+  if not encounter_enabled:
+    return false
   if state != CombatState.EXPLORATION:
     return false
   if not force and not _can_auto_start():
@@ -242,6 +245,33 @@ func apply_player_damage(amount: float) -> float:
   return applied
 
 
+func set_encounter_enabled(enabled: bool) -> void:
+  encounter_enabled = enabled
+  if not encounter_enabled and state == CombatState.EXPLORATION:
+    warden.set_combat_active(false)
+
+
+func reset_for_prologue(restore_exploration_ui: bool = true) -> void:
+  player_health = MAX_PLAYER_HEALTH
+  cancel_focus()
+  pulse_cooldown = 0.0
+  evade_charges = 3
+  evade_recharge_progress = 0.0
+  evade_protection = 0.0
+  encounter_completed = false
+  target_locked = false
+  flight_camera.set_combat_target(null)
+  warden.reset_warden()
+  warden.set_combat_active(false)
+  combat_hud.visible = false
+  if restore_exploration_ui:
+    if exploration_hud != null:
+      exploration_hud.visible = true
+    if discovery_ui != null:
+      discovery_ui.set_exploration_input_enabled(true)
+  _set_state(CombatState.EXPLORATION)
+
+
 func reset_encounter() -> void:
   player_health = MAX_PLAYER_HEALTH
   cancel_focus()
@@ -257,13 +287,14 @@ func reset_encounter() -> void:
 
 
 func start_combat_debug() -> void:
+  encounter_enabled = true
   flight_player.reset_flight(Transform3D(Basis(Vector3.UP, -0.75), COMBAT_START))
   flight_player.set_player_input_enabled(true)
   begin_encounter(true)
 
 
 func _can_auto_start() -> bool:
-  return not encounter_completed and flight_player.player_input_enabled and (traversal == null or traversal.state == TraversalCoordinator.TraversalState.FLIGHT)
+  return encounter_enabled and not encounter_completed and flight_player.player_input_enabled and (traversal == null or traversal.state == TraversalCoordinator.TraversalState.FLIGHT)
 
 
 func _update_relative_space() -> void:

@@ -49,6 +49,9 @@ var manual_yaw_offset: float = 0.0
 var manual_pitch_offset: float = 0.0
 var combat_target: Node3D
 var combat_framing_strength: float = 0.18
+var story_target: Node3D
+var story_framing_strength: float = 0.0
+var story_target_time: float = 0.0
 
 var _manual_idle_time: float = 0.0
 var _combat_impulse := Vector3.ZERO
@@ -77,6 +80,18 @@ func add_combat_impulse(strength: float) -> void:
   _combat_impulse += Vector3(strength * 0.65, strength * 0.35, 0.0)
 
 
+func set_story_target(target: Node3D, duration: float, strength: float = 0.1) -> void:
+  story_target = target
+  story_target_time = maxf(0.0, duration)
+  story_framing_strength = clampf(strength, 0.0, 0.2)
+
+
+func clear_story_target() -> void:
+  story_target = null
+  story_target_time = 0.0
+  story_framing_strength = 0.0
+
+
 func set_combat_target(target: Node3D) -> void:
   combat_target = target
 
@@ -90,6 +105,10 @@ func _process(delta: float) -> void:
   _update_distance_and_collision(delta)
   _update_fov(delta)
   _combat_impulse = _combat_impulse.lerp(Vector3.ZERO, 1.0 - exp(-11.0 * delta))
+  if story_target_time > 0.0:
+    story_target_time = maxf(0.0, story_target_time - delta)
+    if story_target_time <= 0.0:
+      clear_story_target()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -201,6 +220,9 @@ func _desired_camera_basis() -> Basis:
   if is_instance_valid(combat_target):
     var enemy_direction := combat_target.global_position - look_target
     look_target += enemy_direction * combat_framing_strength
+  elif is_instance_valid(story_target) and story_target_time > 0.0:
+    var story_direction := story_target.global_position - look_target
+    look_target += story_direction * story_framing_strength
   var desired_basis := Transform3D(Basis.IDENTITY, global_position).looking_at(
     look_target,
     Vector3.UP

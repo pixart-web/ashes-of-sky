@@ -1,6 +1,8 @@
 class_name DiscoveryUI
 extends CanvasLayer
 
+signal echo_closed(data: DiscoveryData)
+
 @export_node_path("DiscoveryManager") var discovery_manager_path: NodePath
 
 @onready var banner: PanelContainer = $Root/Banner
@@ -24,6 +26,8 @@ var _echo_close_block_frames: int = 0
 var _interaction_available: bool = false
 var _interaction_data: DiscoveryData
 var exploration_input_enabled: bool = true
+var thread_entries: Array[Dictionary] = []
+var _open_echo_data: DiscoveryData
 
 
 func _ready() -> void:
@@ -104,6 +108,7 @@ func open_echo(data: DiscoveryData) -> void:
   if not exploration_input_enabled or data == null or journal_overlay.visible:
     return
   echo_title.text = data.display_name
+  _open_echo_data = data
   echo_text.text = data.recovered_text
   echo_text.visible_ratio = 0.0
   echo_overlay.visible = true
@@ -128,6 +133,14 @@ func close_echo() -> void:
   echo_overlay.visible = false
   _release_overlay_pause()
   _refresh_interaction_hint()
+  var closed_data := _open_echo_data
+  _open_echo_data = null
+  echo_closed.emit(closed_data)
+
+
+func set_thread_entries(entries: Array[Dictionary]) -> void:
+  thread_entries = entries.duplicate(true)
+  _rebuild_journal()
 
 
 func is_journal_open() -> bool:
@@ -213,6 +226,11 @@ func _rebuild_journal() -> void:
       if data.category == DiscoveryData.Category.ECHO and not data.recovered_text.is_empty():
         entry += "\n\n[color=#9bb7ba]%s[/color]" % data.recovered_text
       sections.append(entry)
+  if not thread_entries.is_empty():
+    sections.append("[color=#75c9d1][font_size=22]THREADS[/font_size][/color]")
+    for thread in thread_entries:
+      sections.append("[font_size=19][b]%s[/b][/font_size]\n%s" % [thread.get("title", "UNKNOWN THREAD"), thread.get("text", "")])
+
   if sections.is_empty():
     journal_text.text = "[color=#829092]No discoveries recorded.[/color]"
   else:
