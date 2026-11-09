@@ -48,8 +48,9 @@ func _physics_process(_delta: float) -> void:
 
   var position := flight_player.global_position
   var horizontal_distance := Vector2(position.x, position.z).length()
+  var in_pale_reach_corridor := absf(position.x) < 650.0 and position.z < -850.0 and position.z > -1760.0
   if (
-    horizontal_distance > out_of_bounds_radius
+    (horizontal_distance > out_of_bounds_radius and not in_pale_reach_corridor)
     or position.y < minimum_world_height
     or position.y > maximum_world_height
   ):
@@ -65,6 +66,8 @@ func _physics_process(_delta: float) -> void:
 
 
 func get_region_name(position: Vector3) -> StringName:
+  if absf(position.x) < 650.0 and position.z < -850.0:
+    return &"THE PALE REACH"
   if position.x > 390.0 and position.z > -260.0 and position.z < 40.0:
     return &"THE SILENT CHAMBER"
   if position.z > 500.0:

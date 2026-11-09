@@ -378,7 +378,7 @@ func _build_title_card() -> void:
   label.position = Vector2(-180, 72)
   label.size = Vector2(360, 90)
   label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-  label.text = "CHAPTER I\nTHE ASHEN SIGNAL"
+  label.text = "PROLOGUE COMPLETE\nTHE ASHEN SIGNAL"
   label.add_theme_font_size_override("font_size", 24)
   title_layer.add_child(label)
 

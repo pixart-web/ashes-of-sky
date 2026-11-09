@@ -35,7 +35,12 @@ var prompt_label: Label
 var _state_time: float = 0.0
 var _transition_start: Transform3D
 var _dismount_start: Vector3
-
+var _landing_sites: Dictionary = {}
+var _active_site_id: StringName = &"silent_chamber"
+var _landing_position: Vector3 = SilentChamberGroundWorld.LANDING_POSITION
+var _dismount_position: Vector3 = SilentChamberGroundWorld.DISMOUNT_POSITION
+var _recovery_position: Vector3 = SilentChamberGroundWorld.RECOVERY_POSITION
+var _takeoff_forward: Vector3 = Vector3.RIGHT
 
 func _ready() -> void:
   flight_player = get_node_or_null(flight_player_path) as LunarisFlightController
@@ -103,11 +108,17 @@ func _unhandled_input(event: InputEvent) -> void:
 func is_landing_valid() -> bool:
   if state != TraversalState.FLIGHT or not flight_player.player_input_enabled:
     return false
-  var offset := flight_player.global_position - SilentChamberGroundWorld.LANDING_POSITION
-  var in_volume := absf(offset.x) <= 45.0 and absf(offset.z) <= 34.0 and offset.y >= 0.0 and offset.y <= 42.0
-  var forward := -flight_player.global_basis.z.normalized()
-  var safe_orientation := forward.dot(Vector3.RIGHT) >= 0.35 and absf(forward.y) <= 0.55
-  return in_volume and flight_player.current_speed <= 18.0 and safe_orientation
+  if _site_is_valid(&"silent_chamber", {
+    "landing": SilentChamberGroundWorld.LANDING_POSITION,
+    "dismount": SilentChamberGroundWorld.DISMOUNT_POSITION,
+    "recovery": SilentChamberGroundWorld.RECOVERY_POSITION,
+    "forward": Vector3.RIGHT,
+  }):
+    return true
+  for site_id in _landing_sites:
+    if _site_is_valid(site_id, _landing_sites[site_id]):
+      return true
+  return false
 
 
 func request_landing() -> bool:
@@ -122,7 +133,7 @@ func request_landing() -> bool:
 
 
 func can_mount() -> bool:
-  return state == TraversalState.GROUND and ground_player.global_position.distance_to(SilentChamberGroundWorld.DISMOUNT_POSITION) <= 7.0
+  return state == TraversalState.GROUND and ground_player.global_position.distance_to(_dismount_position) <= 7.0
 
 
 func request_mount() -> bool:
@@ -149,6 +160,7 @@ func request_takeoff() -> bool:
 func start_ground_debug() -> void:
   if flight_player == null or ground_player == null:
     return
+  _select_site(&"silent_chamber", {"landing": SilentChamberGroundWorld.LANDING_POSITION, "dismount": SilentChamberGroundWorld.DISMOUNT_POSITION, "recovery": SilentChamberGroundWorld.RECOVERY_POSITION, "forward": Vector3.RIGHT})
   flight_player.reset_flight(Transform3D(Basis(Vector3.UP, -PI * 0.5), SilentChamberGroundWorld.LANDING_POSITION))
   flight_player.set_player_input_enabled(false)
   flight_player.flight_state = &"LANDED"
@@ -167,7 +179,7 @@ func start_ground_debug() -> void:
 
 func recover_ground() -> void:
   if state == TraversalState.GROUND:
-    ground_player.reset_ground(SilentChamberGroundWorld.RECOVERY_POSITION)
+    ground_player.reset_ground(_recovery_position)
 
 
 func _update_flight_prompt() -> void:
@@ -178,7 +190,7 @@ func _update_flight_prompt() -> void:
 func _update_landing() -> void:
   var ratio := clampf(_state_time / maxf(landing_duration, 0.01), 0.0, 1.0)
   var eased := ratio * ratio * (3.0 - 2.0 * ratio)
-  var target := Transform3D(Basis(Vector3.UP, -PI * 0.5), SilentChamberGroundWorld.LANDING_POSITION)
+  var target := Transform3D(Basis.looking_at(-_takeoff_forward, Vector3.UP), _landing_position)
   flight_player.global_position = _transition_start.origin.lerp(target.origin, eased)
   flight_player.global_basis = Basis(_transition_start.basis.get_rotation_quaternion().slerp(target.basis.get_rotation_quaternion(), eased))
   if ratio >= 1.0:
@@ -202,7 +214,7 @@ func _begin_dismount() -> void:
 
 func _update_dismount() -> void:
   var ratio := clampf(_state_time / maxf(dismount_duration, 0.01), 0.0, 1.0)
-  ground_player.global_position = _dismount_start.lerp(SilentChamberGroundWorld.DISMOUNT_POSITION, ratio)
+  ground_player.global_position = _dismount_start.lerp(_dismount_position, ratio)
   if ratio >= 1.0:
     ground_player.set_player_input_enabled(true)
     _set_state(TraversalState.GROUND)
@@ -229,7 +241,7 @@ func _update_mounting() -> void:
 
 func _update_takeoff() -> void:
   var ratio := clampf(_state_time / maxf(takeoff_duration, 0.01), 0.0, 1.0)
-  var forward := Vector3.RIGHT
+  var forward := _takeoff_forward
   flight_player.global_position = _transition_start.origin + forward * (ratio * 18.0) + Vector3.UP * (ratio * ratio * 14.0)
   if ratio >= 1.0:
     ground_player.camera.current = false
@@ -284,3 +296,49 @@ func reset_to_flight() -> void:
     discovery_ui.set_exploration_input_enabled(true)
   prompt_label.visible = false
   _set_state(TraversalState.FLIGHT)
+func register_landing_site(site_id: StringName, landing: Vector3, dismount: Vector3, recovery: Vector3, takeoff_forward: Vector3) -> void:
+  _landing_sites[site_id] = {"landing": landing, "dismount": dismount, "recovery": recovery, "forward": takeoff_forward.normalized()}
+
+
+func get_active_site_id() -> StringName:
+  return _active_site_id
+
+
+func start_ground_at_site_debug(site_id: StringName) -> bool:
+  if not _landing_sites.has(site_id):
+    return false
+  _select_site(site_id, _landing_sites[site_id])
+  flight_player.reset_flight(Transform3D(Basis.looking_at(-_takeoff_forward, Vector3.UP), _landing_position))
+  flight_player.set_player_input_enabled(false)
+  flight_player.flight_state = &"LANDED"
+  if flight_player.has_node("VisualPivot/LunarisVisual"):
+    var visual := flight_player.get_node("VisualPivot/LunarisVisual") as LunarisVisual
+    visual.set_wing_pose(LunarisVisual.WingPose.FOLDED)
+    visual.set_rider_visible(false)
+  ground_player.reset_ground(_recovery_position)
+  ground_player.set_player_input_enabled(true)
+  flight_camera.set_process(false)
+  ground_player.camera.current = true
+  _set_state(TraversalState.GROUND)
+  return true
+
+
+func _site_is_valid(site_id: StringName, site: Dictionary) -> bool:
+  var landing: Vector3 = site["landing"]
+  var offset := flight_player.global_position - landing
+  var in_volume := absf(offset.x) <= 45.0 and absf(offset.z) <= 38.0 and offset.y >= 0.0 and offset.y <= 44.0
+  var forward := -flight_player.global_basis.z.normalized()
+  var site_forward: Vector3 = site["forward"]
+  var safe_orientation := forward.dot(site_forward) >= 0.3 and absf(forward.y) <= 0.55
+  if in_volume and flight_player.current_speed <= 18.0 and safe_orientation:
+    _select_site(site_id, site)
+    return true
+  return false
+
+
+func _select_site(site_id: StringName, site: Dictionary) -> void:
+  _active_site_id = site_id
+  _landing_position = site["landing"]
+  _dismount_position = site["dismount"]
+  _recovery_position = site["recovery"]
+  _takeoff_forward = site["forward"]

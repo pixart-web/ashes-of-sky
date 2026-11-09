@@ -216,6 +216,42 @@ pause={
 ]
 }
 
+mb01_first_resonance={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"ctrl_pressed":true,"physical_keycode":54)]
+}
+mb01_spire_exterior={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"ctrl_pressed":true,"physical_keycode":55)]
+}
+mb01_spire_ground={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"ctrl_pressed":true,"physical_keycode":56)]
+}
+mb01_vault={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"ctrl_pressed":true,"physical_keycode":57)]
+}
+mb01_pale_reach={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"alt_pressed":true,"physical_keycode":49)]
+}
+mb01_sentinel={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"alt_pressed":true,"physical_keycode":50)]
+}
+mb01_chapter_complete={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"alt_pressed":true,"physical_keycode":51)]
+}
+mb01_reset_chapter={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"shift_pressed":true,"ctrl_pressed":true,"physical_keycode":48)]
+}
+mb01_reset_save={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"shift_pressed":true,"ctrl_pressed":true,"physical_keycode":57)]
+}
 [rendering]
 
 renderer/rendering_method="gl_compatibility"

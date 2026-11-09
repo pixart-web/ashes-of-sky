@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3]
+[gd_scene load_steps=34 format=3]
 
 [ext_resource type="Script" path="res://ui/debug_hud.gd" id="1_hud"]
 [ext_resource type="Script" path="res://actors/lunaris/lunaris_flight_controller.gd" id="2_flight_controller"]
@@ -18,6 +18,13 @@
 [ext_resource type="Script" path="res://combat/ash_warden.gd" id="16_warden"]
 [ext_resource type="Script" path="res://combat/aerial_combat_controller.gd" id="17_combat"]
 [ext_resource type="Script" path="res://prologue/prologue_director.gd" id="18_prologue"]
+[ext_resource type="Script" path="res://chapter/evolution/lunaris_evolution.gd" id="19_evolution"]
+[ext_resource type="Script" path="res://chapter/world/chapter_one_world.gd" id="20_chapter_world"]
+[ext_resource type="Script" path="res://chapter/combat/chapter_combat.gd" id="21_chapter_combat"]
+[ext_resource type="Script" path="res://systems/save/game_save_system.gd" id="22_save"]
+[ext_resource type="Script" path="res://chapter/ui/resonance_ui.gd" id="23_resonance_ui"]
+[ext_resource type="Script" path="res://chapter/ui/game_frontend.gd" id="24_frontend"]
+[ext_resource type="Script" path="res://chapter/master_build_director.gd" id="25_master"]
 
 [sub_resource type="BoxShape3D" id="LunarisCollisionShape"]
 size = Vector3(5.8, 1.0, 3.6)
@@ -73,6 +80,7 @@ size = Vector2(0.08, 2.4)
 
 [node name="ValleyOfAsh" parent="." instance=ExtResource("5_valley")]
 flight_player_path = NodePath("../Lunaris")
+minimum_world_height = -180.0
 
 [node name="DiscoveryManager" type="Node" parent="."]
 script = ExtResource("6_discovery_manager")
@@ -255,3 +263,39 @@ chamber_path = NodePath("../SilentChamberGroundWorld")
 valley_path = NodePath("../ValleyOfAsh")
 camera_path = NodePath("../FlightCameraRig")
 lunaris_path = NodePath("../Lunaris")
+[node name="ChapterOneWorld" type="Node3D" parent="."]
+script = ExtResource("20_chapter_world")
+
+[node name="LunarisEvolution" type="Node" parent="."]
+script = ExtResource("19_evolution")
+visual_path = NodePath("../Lunaris/VisualPivot/LunarisVisual")
+
+[node name="ChapterCombat" type="Node3D" parent="."]
+script = ExtResource("21_chapter_combat")
+flight_player_path = NodePath("../Lunaris")
+evolution_path = NodePath("../LunarisEvolution")
+
+[node name="GameSaveSystem" type="Node" parent="."]
+script = ExtResource("22_save")
+
+[node name="ResonanceUI" type="CanvasLayer" parent="."]
+script = ExtResource("23_resonance_ui")
+
+[node name="GameFrontend" type="CanvasLayer" parent="."]
+script = ExtResource("24_frontend")
+save_system_path = NodePath("../GameSaveSystem")
+
+[node name="MasterBuildDirector" type="Node" parent="."]
+script = ExtResource("25_master")
+prologue_path = NodePath("../PrologueDirector")
+evolution_path = NodePath("../LunarisEvolution")
+resonance_ui_path = NodePath("../ResonanceUI")
+chapter_world_path = NodePath("../ChapterOneWorld")
+chapter_combat_path = NodePath("../ChapterCombat")
+save_system_path = NodePath("../GameSaveSystem")
+frontend_path = NodePath("../GameFrontend")
+discovery_manager_path = NodePath("../DiscoveryManager")
+discovery_ui_path = NodePath("../DiscoveryUI")
+traversal_path = NodePath("../TraversalCoordinator")
+lunaris_path = NodePath("../Lunaris")
+ground_player_path = NodePath("../GroundPlayer")
