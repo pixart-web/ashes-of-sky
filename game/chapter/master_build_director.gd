@@ -379,7 +379,15 @@ func _recover_echo(discovery_id: StringName) -> bool:
 func _autosave_current() -> void:
   if save_system == null or lunaris == null:
     return
-  save_system.autosave(create_snapshot(), lunaris.global_position)
+  save_system.autosave(create_snapshot(), _get_safe_position())
+
+
+func _get_safe_position() -> Vector3:
+  if traversal.state == TraversalCoordinator.TraversalState.FLIGHT:
+    return lunaris.global_position
+  if traversal.get_active_site_id() == &"spire":
+    return ChapterOneWorld.SPIRE_LANDING + Vector3(0, 20, 35)
+  return ValleyOfAsh.SPAWN_POSITION
 
 
 func _update_threads() -> void:

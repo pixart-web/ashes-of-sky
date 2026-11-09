@@ -32,6 +32,8 @@ extends Node3D
 @export_category("Manual Look")
 @export var manual_look_speed: float = 95.0
 @export var mouse_sensitivity: float = 0.12
+@export var invert_y: bool = false
+@export_range(0.0, 1.0) var shake_strength: float = 0.7
 @export var manual_pitch_limit: float = 35.0
 @export var manual_recenter_delay: float = 1.5
 @export var manual_recenter_speed: float = 90.0
@@ -119,7 +121,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
   manual_yaw_offset -= deg_to_rad(event.relative.x * mouse_sensitivity)
   manual_pitch_offset = clampf(
-    manual_pitch_offset - deg_to_rad(event.relative.y * mouse_sensitivity),
+    manual_pitch_offset - deg_to_rad(event.relative.y * mouse_sensitivity * (-1.0 if invert_y else 1.0)),
     -deg_to_rad(manual_pitch_limit),
     deg_to_rad(manual_pitch_limit)
   )

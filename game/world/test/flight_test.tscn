@@ -269,6 +269,7 @@ script = ExtResource("20_chapter_world")
 [node name="LunarisEvolution" type="Node" parent="."]
 script = ExtResource("19_evolution")
 visual_path = NodePath("../Lunaris/VisualPivot/LunarisVisual")
+flight_player_path = NodePath("../Lunaris")
 
 [node name="ChapterCombat" type="Node3D" parent="."]
 script = ExtResource("21_chapter_combat")

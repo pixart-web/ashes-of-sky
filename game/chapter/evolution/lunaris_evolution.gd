@@ -9,6 +9,7 @@ enum Tendency { NONE, PREDATOR, GUARDIAN, ORACLE, WRAITH }
 const TENDENCY_IDS: Array[StringName] = [&"none", &"predator", &"guardian", &"oracle", &"wraith"]
 
 @export_node_path("LunarisVisual") var visual_path: NodePath
+@export_node_path("LunarisFlightController") var flight_player_path: NodePath
 
 var tendency: Tendency = Tendency.NONE
 var evolution_stage: int = 0
@@ -17,11 +18,13 @@ var guardian_affinity: float = 0.0
 var oracle_affinity: float = 0.0
 var wraith_affinity: float = 0.0
 var visual: LunarisVisual
+var flight_player: LunarisFlightController
 var evolution_marks: Node3D
 
 
 func _ready() -> void:
   visual = get_node_or_null(visual_path) as LunarisVisual
+  flight_player = get_node_or_null(flight_player_path) as LunarisFlightController
   _ensure_visual_marks()
   _apply_visual()
 
@@ -108,6 +111,21 @@ func _ensure_visual_marks() -> void:
 
 
 func _apply_visual() -> void:
+  if flight_player != null:
+    flight_player.maximum_speed = 32.0
+    flight_player.boost_speed = 48.0
+    flight_player.yaw_speed = 70.0
+    flight_player.pitch_speed = 50.0
+    flight_player.momentum_response = 24.0
+    match tendency:
+      Tendency.PREDATOR:
+        flight_player.maximum_speed = 34.0
+        flight_player.boost_speed = 50.0
+      Tendency.GUARDIAN:
+        flight_player.momentum_response = 30.0
+      Tendency.WRAITH:
+        flight_player.yaw_speed = 88.0
+        flight_player.pitch_speed = 62.0
   if evolution_marks == null:
     return
   evolution_marks.visible = evolution_stage > 0

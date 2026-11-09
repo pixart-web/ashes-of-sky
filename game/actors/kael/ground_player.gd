@@ -8,6 +8,7 @@ extends CharacterBody3D
 @export var rotation_speed: float = 9.0
 @export var gravity: float = 24.0
 @export var mouse_sensitivity: float = 0.0022
+@export var invert_y: bool = false
 @export var camera_pitch_limit: float = 55.0
 
 var player_input_enabled: bool = false
@@ -63,7 +64,7 @@ func _unhandled_input(event: InputEvent) -> void:
   if event is InputEventMouseMotion and Input.is_action_pressed(&"camera_look"):
     camera_yaw.rotation.y -= event.relative.x * mouse_sensitivity
     camera_pitch.rotation.x = clampf(
-      camera_pitch.rotation.x - event.relative.y * mouse_sensitivity,
+      camera_pitch.rotation.x - event.relative.y * mouse_sensitivity * (-1.0 if invert_y else 1.0),
       -deg_to_rad(camera_pitch_limit),
       deg_to_rad(camera_pitch_limit)
     )

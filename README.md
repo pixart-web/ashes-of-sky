@@ -134,6 +134,31 @@ Development-only shortcuts are intentionally absent from normal UI:
 | Ctrl+3 | Start after Last Signal |
 | Ctrl+4 | Start at Warden |
 | Ctrl+5 | Start after Warden |
+
+## Master Build 01 — Chapter I
+
+The approved Prologue now continues into one uninterrupted Chapter I: First Resonance, a Stage 1 Lunaris tendency, the aerial approach and landing at the Spire, its open ground sanctum, a three-resonator light-path puzzle, the Resonance Vault, the Pale Reach, two Ash Skimmer encounters, and the three-phase Veiled Sentinel. The aftermath introduces **THE SKY BELOW** and leaves the player in control. The chapter contains no quest arrows, loot, economy, inventory, ground combat, or scene transition during normal play.
+
+First Resonance offers four non-exclusive long-term tendencies: **Predator** (Pulse momentum), **Guardian** (defensive stability), **Oracle** (Focus efficiency), and **Wraith** (mobility). MB01 stores four independent affinity values so later hybrid evolution remains possible.
+
+The front end provides **Continue**, **New Journey**, **Settings**, and **Quit**. `Esc` opens the pause menu. Saves are versioned JSON in the Godot user-data directory and autosave only after meaningful discoveries, world transitions, evolution choice, boss defeat, and chapter completion. Continue restores discoveries, Threads, evolution, world reactions, defeated bosses, settings, and a safe flight position.
+
+Development-only navigation remains outside production UI:
+
+| Shortcut | Chapter checkpoint |
+| --- | --- |
+| Ctrl+6 | First Resonance |
+| Ctrl+7 | Spire exterior |
+| Ctrl+8 | Spire ground |
+| Ctrl+9 | Resonance Vault |
+| Alt+1 | Pale Reach |
+| Alt+2 | Veiled Sentinel |
+| Alt+3 | Chapter complete |
+| Ctrl+Shift+0 | Reset Chapter I state |
+| Ctrl+Shift+9 | Delete local save |
+
+The full primary playtest must start through **New Journey** and must not use these shortcuts.
+
 ## Repository layout
 
 - `game/` — Godot project and game resources

@@ -58,7 +58,7 @@ func activate_puzzle_node(index: int) -> bool:
   puzzle_progress_changed.emit(count)
   if count == puzzle_nodes_active.size():
     puzzle_complete = true
-    vault_door.position.y += 18.0
+    vault_door.position.y += 42.0
     puzzle_solved.emit()
   return true
 
@@ -169,6 +169,8 @@ func _build_spire_interior() -> void:
   interior.add_child(vault)
   _box(vault, "VaultFloor", VAULT_POSITION + Vector3(0, -4, 0), Vector3(62, 6, 70), Vector3.ZERO, _stone, true)
   _torus(vault, "VaultCore", VAULT_POSITION + Vector3(0, 16, -10), 12.0, _cyan)
+  for index in range(5):
+    _box(vault, "RevelationStep%02d" % index, Vector3(0, 150 + index * 7, -880 - index * 9), Vector3(34, 3, 12), Vector3.ZERO, _stone, true)
   var revelation := Node3D.new()
   revelation.name = "RevelationChamber"
   interior.add_child(revelation)

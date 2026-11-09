@@ -17,7 +17,7 @@ var overwrite_confirmation: ConfirmationDialog
 var settings: Dictionary = {
   "master_volume": 1.0, "music_volume": 0.8, "effects_volume": 0.9,
   "mouse_sensitivity": 1.0, "invert_y": false, "camera_shake": 0.7,
-  "subtitles": true, "fullscreen": false,
+  "subtitles": true, "fullscreen": false, "resolution": "1280x720",
 }
 
 
@@ -25,6 +25,7 @@ func _ready() -> void:
   layer = 30
   process_mode = Node.PROCESS_MODE_ALWAYS
   save_system = get_node_or_null(save_system_path) as GameSaveSystem
+  _ensure_audio_buses()
   _build_title()
   _build_pause()
   _build_settings()
@@ -80,7 +81,31 @@ func apply_setting(setting_id: StringName, value: Variant) -> void:
   settings[setting_id] = value
   match setting_id:
     &"master_volume": AudioServer.set_bus_volume_db(0, linear_to_db(float(value)))
+    &"music_volume": AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Music"), linear_to_db(float(value)))
+    &"effects_volume": AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Effects"), linear_to_db(float(value)))
     &"fullscreen": DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if bool(value) else DisplayServer.WINDOW_MODE_WINDOWED)
+    &"resolution":
+      var parts := String(value).split("x")
+      if parts.size() == 2:
+        DisplayServer.window_set_size(Vector2i(int(parts[0]), int(parts[1])))
+    &"mouse_sensitivity":
+      var flight_camera := get_node_or_null("../FlightCameraRig") as LunarisFlightCamera
+      var ground_player := get_node_or_null("../GroundPlayer") as GroundPlayer
+      if flight_camera != null:
+        flight_camera.mouse_sensitivity = 0.12 * float(value)
+      if ground_player != null:
+        ground_player.mouse_sensitivity = 0.0022 * float(value)
+    &"invert_y":
+      var flight_camera := get_node_or_null("../FlightCameraRig") as LunarisFlightCamera
+      var ground_player := get_node_or_null("../GroundPlayer") as GroundPlayer
+      if flight_camera != null:
+        flight_camera.invert_y = bool(value)
+      if ground_player != null:
+        ground_player.invert_y = bool(value)
+    &"camera_shake":
+      var flight_camera := get_node_or_null("../FlightCameraRig") as LunarisFlightCamera
+      if flight_camera != null:
+        flight_camera.shake_strength = float(value)
 
 
 func create_settings_snapshot() -> Dictionary:
@@ -183,7 +208,20 @@ func _build_settings() -> void:
     toggle.button_pressed = bool(settings[data[1]])
     toggle.toggled.connect(func(value): apply_setting(data[1], value))
     column.add_child(toggle)
+  var resolution := OptionButton.new()
+  resolution.add_item("1280 × 720")
+  resolution.add_item("1600 × 900")
+  resolution.add_item("1920 × 1080")
+  resolution.item_selected.connect(func(index): apply_setting(&"resolution", ["1280x720", "1600x900", "1920x1080"][index]))
+  column.add_child(resolution)
   column.add_child(_button("BACK", show_pause))
+
+
+func _ensure_audio_buses() -> void:
+  for bus_name in ["Music", "Effects"]:
+    if AudioServer.get_bus_index(bus_name) < 0:
+      AudioServer.add_bus()
+      AudioServer.set_bus_name(AudioServer.bus_count - 1, bus_name)
 
 
 func _base_screen(node_name: String) -> Control:
